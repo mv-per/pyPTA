@@ -8,60 +8,94 @@ from database.db_setup import Session
 from database.models import Fluid
 from sqlalchemy import or_
 
-# co2 = Fluid()
-# co2.name = "Carbon Dioxide"
-# co2.formula = "CO2"
-# co2.molar_mass = 44.0098               # Molar mass, g / mol
-# co2.critical_pressure = 73.773e5              # Critical Pressure, Pa
-# co2.critical_temperature = 304.13                # Critical Temperature, K
-# co2.critical_compressibility = 0.2746                # Critical compressibility
-# co2.accentric_factor = 0.22394                # Accentric factor
-# co2.lj_diameter = 3.941           # Lennard-Jonnes diameter
-
-
 
 class FluidData:
 
     def __init__(self):
         self.mixture = None
-        self.data = defaultdict(list)
-        self.db = Session()
+        self.fluids = []
+        self.db_session = self._get_db_session()
+
+    def _get_db_session(self):
+        return Session()
+
+    def get_all(self):
+        return self.db_session.query(Fluid).all()
 
     def getProperties(self, mixture):
         self.mixture = mixture
         self._load_fluid_data_from_db()
         return self.data
 
-    def _store_to_list(self, data):
-        for key, value in data.items():
-            self.data[key].append(value)
-
     def _load_fluid_data_from_db(self):
-        for component in self.mixture:
-            data = self.db.query(Fluid).filter(or_(Fluid.name == component, Fluid.formula == component)).first()
+        for fluid in self.mixture:
+            data = self.db_session.query(Fluid).filter(or_(Fluid.name == fluid, Fluid.formula == fluid)).first()
             if data:
-                self._store_to_list(data.__dict__)
+                self.fluids.append(data)
             else:
-                raise Exception(f"Component {component} not found in Database")
+                raise Exception(f"Fluid {fluid} not found in Database")
 
-    def updateProperty(self, component, data):
-        self.db.query(Fluid).filter(or_(Fluid.name == component, Fluid.formula == component)).update(**data)
-        self.db.commit()
-        self.db.flush()
+    def get_fluid(self, fluid):
+        _fluid = self.db_session.query(Fluid).filter(or_(Fluid.name == fluid, Fluid.formula == fluid)).first()
+        if _fluid:
+            return _fluid
+        else:
+            raise Exception(f"Fluid {fluid} not found in database")
+
+    def update_fluid(self, fluid, data):
+        _fluid = self.db_session.query(Fluid).filter(or_(Fluid.name == fluid, Fluid.formula == fluid)).first()
+        if _fluid:
+            for key, value in data.__dict__.items():
+                try:
+                    setattr(_fluid, key, value)
+                except:
+                    pass
+            self.db_session.commit()
+            self.db_session.flush()
+        else:
+            raise Exception(f"Fluid {fluid} not found in database")
+
+    def add_fluid(self, data:Fluid):
+        self.db_session.add(data)
+        self.db_session.commit()
+
  
-    def loadPropertiesFromCSV(self, csvPath):
-       #get all current fluids 
-       self.db.query(Fluid).all()
+    def load_fluids_from_dict(self, data_dict):
+        for i in range(len(data_dict['name'])):
+            _fluid_name =data_dict['name'][i]
+            _fluid_formula =data_dict['formula'][i]
+            exists = self.db_session.query(Fluid).filter(or_(Fluid.name == _fluid_name, Fluid.formula == _fluid_formula)).first()
 
-       # load csv
+            fluid = Fluid()
+            for key, values in data_dict.items():
+                setattr(fluid, key, values[i])
+
+            if exists:
+                print(f"Fluid {_fluid_name} already on database, updating...")
+                self.update_fluid(_fluid_name, fluid)
+            else:
+                self.add_fluid(fluid)
+            del fluid
+
+
+    def load_fluids_from_csv(self, csvPath):
+        # load csv to dict
+        data_dict = pd.read_csv(csvPath).to_dict()
+        
+        # store fluids
+        self.load_fluids_from_dict(data_dict)
+
+    
+    def load_fluids_from_excel(self, excelPath):
+        # load excel to dict
+        data_dict = pd.read_excel(excelPath, engine='openpyxl').to_dict()
+        
+        # store fluids
+        self.load_fluids_from_dict(data_dict)
+
 
 
        #loop through CSV data
 
 
 
-storage = FluidData()
-fluid_properties = storage.getProperties(['CO2', 'Carbon Dioxide'])
-# storage.getProperties(['CO2'])
-
-print("a")

@@ -2,7 +2,7 @@
 
 # import pytest
 
-from pypta.models.mono_component import MonocomponentBaseModel
+from models.mono_component import MonocomponentDataSerializer
 
 
 def test_loading_txt(datadir):
