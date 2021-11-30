@@ -18,8 +18,8 @@ class IdealCpParameters(Base):
     c = Column(Float, nullable=True)
     d = Column(Float, nullable=True)
     e = Column(Float, nullable=True)
-    fluid_id = Column(Integer, ForeignKey('fluid.id'))
-    fluid = relationship("Fluid", back_populates="ideal_cp_parameters")
+    owner_fluid_id = Column(Integer, ForeignKey('fluid.id'))
+    owner_fluid = relationship("Fluid", back_populates="ideal_cp_parameters")
 
 class Fluid(Base):
     __tablename__ = 'fluid'
@@ -35,41 +35,40 @@ class Fluid(Base):
     lj_diameter = Column(Float, nullable=True)
     lj_energy = Column(Float, nullable=True)
     molar_mass = Column(Float)
-    ideal_cp_parameters = relationship("IdealCpParameters", back_populates="fluid", cascade="all, delete-orphan")
+    ideal_cp_parameters = relationship("IdealCpParameters", back_populates="owner_fluid", cascade="all, delete-orphan")
 
 
-class ExperimentalData(Base):
+class PureExperimentalData(Base):
     __tablename__ = 'experimental_data'
 
     id = Column(Integer, primary_key=True)
     _pressure = Column(String, default='')
     _loading = Column(String, default='')
 
-    mono_isotherm_id = Column(Integer, ForeignKey('mono_isotherm.id'))
-    mono_isotherm = relationship("MonoIsotherm", back_populates="experimental_data")
+    owner_pure_isotherm_id = Column(Integer, ForeignKey('pure_isotherm.id'))
+    owner_pure_isotherm = relationship("PureIsothermModel", back_populates="experimental_data")
 
     @property
     def pressure(self):
         return [float(x) for x in self._pressure.split(';')]
     @pressure.setter
-    def pressure(self, pressure_list: List[float]):
-        self._pressure = [str(x)+';' for x in pressure_list]
-
-    
+    def pressure(self, pressure_list):
+        self._pressure = ';'.join(map(str, pressure_list))
+ 
     @property
     def loading(self):
         return [float(x) for x in self._loading.split(';')]
     @loading.setter
-    def loading(self, loading_list: List[float]):
-        self._loading = [str(x)+';' for x in loading_list]
+    def loading(self, loading_list):   
+        self._loading = ';'.join(map(str, loading_list))
 
-class MonoIsotherm(Base):
-    __tablename__ = 'mono_isotherm'
+class PureIsothermModel(Base):
+    __tablename__ = 'pure_isotherm'
     
     id = Column(Integer, primary_key=True)
     name = Column(String)
     fluid_name = Column(String)
-    experimental_data = relationship("ExperimentalData", back_populates="mono_isotherm", cascade="all, delete-orphan")
+    experimental_data = relationship("PureExperimentalData", back_populates="owner_pure_isotherm", cascade="all, delete-orphan")
 
 
 
