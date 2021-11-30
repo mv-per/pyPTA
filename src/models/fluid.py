@@ -22,10 +22,11 @@ class FluidData:
     def get_all(self):
         return self.db_session.query(Fluid).all()
 
-    def getProperties(self, mixture):
-        self.mixture = mixture
-        self._load_fluid_data_from_db()
-        return self.data
+    def get_fluids(self, mixture):
+        _fluids = []
+        for fluid in mixture:
+            _fluids.append(self.get_fluid(fluid))
+        return _fluids
 
     def _load_fluid_data_from_db(self):
         for fluid in self.mixture:

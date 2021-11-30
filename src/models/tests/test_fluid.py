@@ -4,7 +4,7 @@ import os
 
 import pytest
 from database.models import Fluid
-from models.fluid_storage import FluidData
+from models.fluid import FluidData
 
 
 def test_mocked_db(db_session):
@@ -77,3 +77,15 @@ def test_fluid_data_load_fluids_from_excel(empty_db_session, mocker, datadir):
     fluids = fluid_storage.get_all()
 
     assert len(fluids) == 5
+
+def test_fluid_data_get_fluids(empty_db_session, mocker, datadir):
+    file_path = os.path.join(datadir, 'fluidsxlsx.xlsx')
+    mocker.patch('models.fluid_storage.FluidData._get_db_session', return_value=empty_db_session)
+    fluid_storage = FluidData()
+
+    fluid_storage.load_fluids_from_excel(file_path)
+
+    fluids = fluid_storage.get_fluids(['CO2', 'Methane', 'Nitrogen'])
+
+    assert len(fluids) == 3
+    

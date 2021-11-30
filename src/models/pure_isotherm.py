@@ -1,6 +1,9 @@
 from typing import List
-
 import numpy as np
+import pandas as pd
+from database.models import PureIsothermModel, PureExperimentalData
+
+
 
 PRESSURE_UNIT_DICT = {
     'Pa':1.0,
@@ -17,29 +20,31 @@ LOADING_UNIT_DICT = {
     'mol/g': 1.0e3,
 }
 
-class MonocomponentDataSerializer:
+class PureIsotherm:
 
-    def __init__(self, isotherm_name:str, pressure_unit="Pa", loading_unit="mmol/g"):
+    def __init__(self, isotherm_name:str, fluid:str, pressure_unit="Pa", loading_unit="mmol/g"):
         """[summary]
 
         Args:
             isotherm_name (str): [description]
         """
-        self.isotherm_name = isotherm_name
+        self.IsothermModel = PureIsothermModel()
+        self.IsothermModel.name = isotherm_name
+        self.IsothermModel.fluid_name = fluid
         self.loading_unit = loading_unit
         self.pressure_unit = pressure_unit
         self.pressure = []
         self.loading = []
 
     def get_isotherm(self):
-        """ get isotherm data
+        """ get isotherm
 
         Returns:
-            list[pressure, loading]
+            PureIsothermModel
         """
-        return [self.pressure, self.loading]
+        return self.IsothermModel
 
-    def load_data_from_txt(self, txtFilePath:str, pressure_col, loading_col, row_index=0, pressure_unit=None, loading_unit=None):
+    def load_data_from_txt(self, txtFilePath:str, pressure_col, loading_col, pressure_unit=None, loading_unit=None):
         r""" Load monocomponent data from TXT file
 
         Args:
@@ -50,24 +55,34 @@ class MonocomponentDataSerializer:
             pressure_unit (str, optional): Unit of the pressure, Defaults to None
             loading_unit (str, optional): Unit of the loading, Defaults to None
         """
-        self.pressure = np.loadtxt(txtFilePath)[row_index:, pressure_col]
-        self.loading = np.loadtxt(txtFilePath)[row_index:, loading_col]
+        data = pd.read_csv(txtFilePath, sep=" ", header=None).to_dict()
+        self.pressure = data[pressure_col]
+        self.loading = data[loading_col]
 
         self._fix_units(pressure_unit, loading_unit)
         self._check_data_consistency()
 
-    def load_data_from_csv(self, csvFilePath:str, pressure_unit=None, loading_unit=None):
+    def _add_data_to_Model(self):
+        self.IsothermModel.experimental_data.experimental_data = PureExperimentalData()
+        self.IsothermModel.experimental_data.pressure = self.pressure
+        self.IsothermModel.experimental_data.loading = self.loading
+
+    def load_data_from_csv(self, csvFilePath:str, pressure_col, loading_col, pressure_unit=None, loading_unit=None):
         """ Load monocomponent data from CSV file
 
         Args:
             csvFilePath (str): [description]
         """
-
+        data = pd.read_csv(csvFilePath, sep=",", header=None).to_dict()
+        self.pressure = data[pressure_col]
+        self.loading = data[loading_col]
         self._fix_units(pressure_unit, loading_unit)
         self._check_data_consistency()
-        pass
 
-    def load_data_from_excel(self, excelFilePath:str, pressure_unit=None, loading_unit=None, **kwargs):
+
+
+
+    def load_data_from_excel(self, excelFilePath:str,pressure_col, loading_col, pressure_unit=None, loading_unit=None, **kwargs):
         """[summary]
 
         Args:
@@ -76,8 +91,10 @@ class MonocomponentDataSerializer:
                 pressure_range = [ini_row, ini_col, last_row, last_col]
                 loading_range = [ini_row, ini_col, last_row, last_col]
         """
-        if pressure_unit or loading_unit:
-            self._fix_units(pressure_unit, loading_unit)
+        data = pd.read_excel(excelFilePath, header=None).to_dict()
+        self.pressure = data[pressure_col]
+        self.loading = data[loading_col]
+        self._fix_units(pressure_unit, loading_unit)
         self._check_data_consistency()
         pass
 
@@ -102,4 +119,6 @@ class MonocomponentDataSerializer:
     def _check_data_consistency(self):
         if len(self.pressure) != len(self.loading):
             raise Exception("Pass list of pure component data with same number of data")
+        else:
+            self._add_data_to_Model()
         
