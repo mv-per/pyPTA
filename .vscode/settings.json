@@ -11,6 +11,9 @@
         "-t",
         "py37"
     ],
+    "python.autoComplete.extraPaths": [
+        "./src"
+    ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
     "files.associations": {
@@ -77,5 +80,8 @@
         "typeinfo": "cpp",
         "valarray": "cpp",
         "variant": "cpp"
-    }
+    },
+    "python.analysis.extraPaths": [
+        "./src"
+    ]
 }

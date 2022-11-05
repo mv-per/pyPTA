@@ -11,7 +11,7 @@ cpp_args = ["-std=c++11"]
 
 ext_modules = [
     Pybind11Extension(
-        "cpta",
+        "cPTA",
         sources=["src/pyPTA/cpp_files/module.cpp"],
         include_dirs=["pybind11/include"],
         language="c++",
@@ -37,8 +37,7 @@ setup(
     description="A python package to calculate PTA mono- and muilticomponent data.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    cmdclass={"build_py": build_py},
-    setup_requires=["pybind11>=2.6.0"],
+    cmdclass={"build_ext": build_ext, "build_py": build_py},
     ext_modules=ext_modules,
     url="https://github.com/mv-per/pyPTA",
     project_urls={

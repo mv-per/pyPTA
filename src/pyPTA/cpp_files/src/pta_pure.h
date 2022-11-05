@@ -1,28 +1,41 @@
+#ifndef PTA_PURE_H
+#define PTA_PURE_H
+
 #include <cmath>
 #include <vector>
 #include <stdexcept>
 #include <functional>
 
-#include <iostream>
-
+#include "data_classes.h"
+#include "global_helper.h"
 #include "pta_helper.h"
 #include "pr77.h"
-#include "ADSORPTION_POTENTIAL_FUNCTIONS.h"
-#include "GLOBAL_FUNCTIONS.h"
+#include "adsorption_potentials.h"
 
-typedef std::function<mono_eos(double, double)> call_eos;
-typedef std::function<double(double)> call_potential;
-typedef std::function<double(double, double, std::vector<double>, std::function<mono_eos(double, double)>)> call_get_load;
-
-double absolute_deviation(double nexp, double nads)
-{
-	return fabs(nexp - nads);
-}
-
+/**
+ * Perform Pure PTA calculations
+ *
+ * Shapiro, A. A., & Stenby, E. H. (1998).
+ * Potential theory of multicomponent adsorption.
+ * Journal of Colloid and Interface Science, 201(2), 146-157.
+ *
+ */
 class PurePTA
 {
 
 public:
+	std::string potential;
+	std::size_t num_of_layers;
+	std::string equation_of_state;
+	std::string isotherm_type;
+	/**
+	 * PurePTA
+	 *
+	 * @param potential_ Name of the potential to be used in the calculations
+	 * @param eos Name of the Equation of State to be used in the calculations
+	 * @param isotherm_type_ Type of the isotherm to be used in calculations (excess | absolute).
+	 * @param num_of_layers_ Number of layers from the solid to Gibbs phase.
+	 */
 	PurePTA(std::string potential_, std::string eos, std::string isotherm_type_, std::size_t num_of_layers_)
 	{
 		this->potential = potential_;
@@ -30,79 +43,100 @@ public:
 		this->equation_of_state = eos;
 		this->isotherm_type = isotherm_type_;
 		// Set values based on inputs
-		this->integral.resize(num_of_layers);
-		this->_get_loading = get_proper_loader();
 	};
 
-	double get_loading(double P, double T, std::vector<double> potential_params, Fluid fluid)
-	{
-		this->eos_caller = get_equation_of_state(fluid);
-		this->get_potential = get_adsorption_potential(potential_params);
+	~PurePTA(){};
 
-		return _get_loading(P, T, potential_params, eos_caller);
+	/**
+	 * Get the calculated loading in a specific pressure
+	 *
+	 * @param P Pressure of the fluid
+	 * @param T Temperature of the Fluid
+	 * @param potential_params Params of the Adsorption Potential for this fluid
+	 * @param fluid Fluid properties.
+	 * @return Calculated adsorbed loading
+	 */
+	double get_loading(double P, double T, std::vector<double> potential_params, Fluid fluid, std::size_t num_of_layers)
+	{
+
+		call_mono_get_load _get_loading = get_proper_loader();
+		call_potential get_potential = get_adsorption_potential(potential_params, fluid, this->adsorbent_properties);
+		call_mono_eos eos_caller = get_equation_of_state(fluid);
+		return _get_loading(P, T, potential_params, eos_caller, get_potential, num_of_layers);
 	}
 
-	vector<double> get_multiple_loadings(std::vector<double> P, double T, std::vector<double> potential_params, Fluid fluid)
+	/**
+	 * Get the calculated loading for different pressures
+	 *
+	 * @param P List of pressure points to get loading
+	 * @param T Temperature of the Fluid
+	 * @param potential_params Params of the Adsorption Potential for this fluid
+	 * @param fluid Fluid properties.
+	 * @return List of calculated loadings
+	 */
+	std::vector<double> get_multiple_loadings(std::vector<double> P, double T, std::vector<double> potential_params, Fluid fluid, std::size_t num_of_layers)
 	{
-		this->eos_caller = get_equation_of_state(fluid);
-		this->get_potential = get_adsorption_potential(potential_params);
-
 		std::vector<double>
 			_loading(P.size(), 0.0);
 
 		for (std::size_t i = 0; i < P.size(); i++)
 		{
-			_loading[i] = this->_get_loading(P[i], T, potential_params, this->eos_caller);
+			_loading[i] = this->get_loading(P[i], T, potential_params, fluid, num_of_layers);
 		}
 
 		return _loading;
 	}
 
-	double get_absolute_deviation(std::vector<double> loading_exp, std::vector<double> P, double T, std::vector<double> potential_params, Fluid fluid)
+	/**
+	 * Get the deviation between calculated experimental loadings
+	 *
+	 * @param P List of pressure points to get loading
+	 * @param T Temperature of the Fluid
+	 * @param potential_params Params of the Adsorption Potential for this fluid
+	 * @param fluid Fluid properties.
+	 * @return List of calculated loadings
+	 */
+	double get_absolute_deviation(std::string deviation_type,
+								  std::vector<double> loading_exp, std::vector<double> P, double T, std::vector<double> potential_params, Fluid fluid, std::size_t num_of_layers)
 	{
-		this->eos_caller = get_equation_of_state(fluid);
-		this->get_potential = get_adsorption_potential(potential_params);
+		Deviation deviation = get_deviation_function(deviation_type);
 
 		double difference = 0.;
 
+		std::vector<double> calc_loading = this->get_multiple_loadings(P, T, potential_params, fluid, num_of_layers);
+
 		for (std::size_t i = 0; i < P.size(); i++)
 		{
-			difference += absolute_deviation(loading_exp[i], this->_get_loading(P[i], T, potential_params, this->eos_caller));
+			difference += deviation(loading_exp[i], calc_loading[i]);
+		}
+
+		if (deviation_type.find("relative") != std::string::npos)
+		{
+			return 100. / loading_exp.size() * difference;
 		}
 
 		return difference;
 	}
 
-	void set_adsorbent_property(adsorbent properties)
+	void set_adsorbent_property(Adsorbent properties)
 	{
 		this->adsorbent_properties = properties;
 	}
 
 private:
-	std::vector<double> integral;
-	std::string integration_method = "Simpson";
-	std::size_t num_of_layers;
-	std::string potential;
-	std::string equation_of_state;
-	std::string isotherm_type;
-	call_get_load _get_loading;
-	call_potential get_potential;
-	call_eos eos_caller;
-	adsorbent adsorbent_properties;
-	double Pz, f_eps, delta, eps;
-	double PSI_z, PSI_lz;
+	Adsorbent adsorbent_properties;
 
-	std::function<double(double, double, std::vector<double>, std::function<mono_eos(double, double)>)> get_proper_loader()
+	std::function<double(double, double, std::vector<double>, std::function<mono_eos(double, double)>, std::function<double(double)>, std::size_t)> get_proper_loader()
 	{
 		if (this->potential == "DRA")
 		{
-			return [this](double P, double T, std::vector<double> params, call_eos eos)
-			{ return this->get_dr_loading(P, T, params, eos); };
+			return [this](double P, double T, std::vector<double> params, call_mono_eos eos, call_potential get_potential, std::size_t num_of_layers)
+			{ return this->get_dr_loading(P, T, params, eos, get_potential, num_of_layers); };
 		}
 		else if (this->potential == "STEELE" || this->potential == "LEE")
 		{
-			return [this](double P, double T, std::vector<double> params, call_eos eos)
-			{ return this->get_lj_loading(P, T, params, eos); };
+			return [this](double P, double T, std::vector<double> params, call_mono_eos eos, call_potential get_potential, std::size_t num_of_layers)
+			{ return this->get_lj_loading(P, T, params, eos, get_potential, num_of_layers); };
 		}
 		else
 		{
@@ -127,7 +161,7 @@ private:
 		}
 	}
 
-	std::function<double(double)> get_adsorption_potential(std::vector<double> potential_params)
+	std::function<double(double)> get_adsorption_potential(std::vector<double> potential_params, Fluid fluid, Adsorbent solid_properties)
 	{
 		if (this->potential == "DRA")
 		{
@@ -140,14 +174,14 @@ private:
 		{
 			return [=](double z)
 			{
-				return STEELE(z, potential_params[0], potential_params[1], potential_params[2]);
+				return STEELE(z, potential_params[0], fluid.lj_diameter, solid_properties);
 			};
 		}
 		else if (this->potential == "LEE")
 		{
 			return [=](double z)
 			{
-				return LEE(z, potential_params[0], potential_params[1], this->adsorbent_properties);
+				return LEE(z, potential_params[0], fluid.lj_diameter, solid_properties);
 			};
 		}
 		else
@@ -172,20 +206,6 @@ private:
 		}
 	}
 
-	double equilibrium(double p_,
-					   double bulk_fugacity,
-					   double f_eps,
-					   double T,
-					   call_eos eos)
-	{
-		if (isinf(p_) == 1)
-		{
-			return 10000.;
-		}
-		struct mono_eos adsorbed = eos(p_, T);
-		return bulk_fugacity * f_eps - adsorbed.fug;
-	}
-
 	double get_density_value(double adsorbed_density, double bulk_density)
 	{
 		if (this->isotherm_type == "excess")
@@ -202,78 +222,64 @@ private:
 		}
 	}
 
-	double integrate(std::vector<double> integral_vector, double step)
+	double get_dr_loading(double bulk_pressure, double temperature, std::vector<double> potential_params, call_mono_eos eos, call_potential get_potential, std::size_t num_of_layers)
 	{
-		// if (this->integration_method == "Simpson")
-		// {
-		// 	return SIMPS(integral_vector, step, num_of_layers);
-		// }
 
-		// At this time, only simpson rule is implemented
-		return SIMPS(integral_vector, step, this->num_of_layers);
-	}
+		double Pz, f_eps, delta, eps;
 
-	double get_dr_loading(double bulk_pressure, double temperature, std::vector<double> potential_params, call_eos eos)
-	{
 		struct mono_eos bulk = eos(bulk_pressure, temperature);
 
 		// Initial estimates for the adsorbed region
-		this->Pz = bulk_pressure;
+		Pz = bulk_pressure;
 
-		this->delta = potential_params[1] / (double)this->num_of_layers;
+		delta = potential_params[1] / (double)num_of_layers;
 
 		std::vector<double>
-			z = linespace(potential_params[1], delta, this->num_of_layers);
+			z = linespace(potential_params[1], delta, num_of_layers);
+
+		std::vector<double> integral(num_of_layers, 0.0);
 
 		for (std::size_t i = 0; i < z.size(); i++)
 		{
-			this->eps = get_potential(z[i]);
-			this->f_eps = get_f_eps(eps, temperature);
+			eps = get_potential(z[i]);
+			f_eps = this->get_f_eps(eps, temperature);
 
-			static auto MINFUNC = [=](double p)
-			{
-				return equilibrium(p, bulk.fug, this->f_eps, temperature, eos);
-			};
-
-			double (*minfun_pointer)(double) = [](double p)
-			{ return MINFUNC(p); };
-			this->Pz = brent_zeroin(minfun_pointer, this->Pz, 1.0e-16);
+			Pz = find_pz(Pz, bulk.fug, f_eps, temperature, eos);
 
 			struct mono_eos adsorbed = eos(Pz, temperature);
-			this->integral[i] = get_density_value(adsorbed.dens, bulk.dens) * 1e-3;
+			integral[i] = this->get_density_value(adsorbed.dens, bulk.dens) * 1e-3;
 		}
-		return integrate(this->integral, this->delta);
+		return integrate(integral, delta);
 	}
 
-	double get_lj_loading(double Pb, double T, std::vector<double> potential_params, call_eos eos)
+	double get_lj_loading(double Pb, double T, std::vector<double> potential_params, call_mono_eos eos, call_potential get_potential, std::size_t num_of_layers)
 	{
+		double Pz, f_eps, delta, eps;
 		struct mono_eos bulk = eos(Pb, T);
 
 		// Initial estimates for the adsorbed region
-		this->Pz = Pb;
-		double minimal_space = 0.7 * potential_params[2];
+		Pz = Pb;
+		double minimal_space = 0.7 * potential_params[1];
 
-		vector<double>
-			z = linespace(potential_params[1] / 2.0, minimal_space, this->num_of_layers);
+		std::vector<double>
+			z = linespace(potential_params[1] / 2.0, minimal_space, num_of_layers);
 
-		this->delta = z[1] - z[0];
+		delta = z[1] - z[0];
+
+		std::vector<double> integral(num_of_layers, 0.0);
 
 		for (std::size_t i = 0; i < z.size(); i++)
 		{
-			this->eps = get_potential(z[i]) + get_potential(potential_params[1] - z[i]);
-			this->f_eps = get_f_eps(eps, T);
+			eps = get_potential(z[i]) + get_potential(potential_params[1] - z[i]);
+			f_eps = this->get_f_eps(eps, T);
 
-			static auto MINFUNC = [&](double p)
-			{
-				return equilibrium(p, bulk.fug, this->f_eps, T, eos);
-			};
-			double (*minfun_pointer)(double) = [](double p)
-			{ return MINFUNC(p); };
-			this->Pz = brent_zeroin(minfun_pointer, this->Pz, 1.0e-16);
+			Pz = find_pz(Pz, bulk.fug, f_eps, T, eos);
 
 			struct mono_eos adsorbed = eos(Pz, T);
-			this->integral[i] = get_density_value(adsorbed.dens, bulk.dens);
+			integral[i] = this->get_density_value(adsorbed.dens, bulk.dens);
 		}
-		return -potential_params[3] * integrate(this->integral, this->delta) * 1e-7;
+		return -potential_params[2] * integrate(integral, delta) * 1e-7;
 	}
 };
+
+#endif

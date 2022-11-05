@@ -1,20 +1,23 @@
-/*
+#ifndef PR77_H
+#define PR77_H
 
-Source:
-
-Peng, D., & Robinson, D. B. (1977).
-A rigorous method for predicting the critical properties
-of multicomponent systems from an equation of state.
-AIChE Journal, 23(2), 137–144. doi:10.1002/aic.690230202
-
-
-*/
 #include <tuple>
 #include <cmath>
-#include "GLOBAL_FUNCTIONS.h"
-#include "eos_helper.h"
 #include <vector>
 
+#include "data_classes.h"
+#include "global_helper.h"
+#include "eos_helper.h"
+#include "constants.h"
+
+/**
+ * Original Peng-Robinson EOS
+ *
+ * Peng, D., & Robinson, D. B. (1977).
+ * A rigorous method for predicting the critical properties of multicomponent systems from an equation of state.
+ * AIChE Journal, 23(2), 137–144. doi:10.1002/aic.690230202
+ *
+ */
 class pr77
 {
 
@@ -24,17 +27,36 @@ class pr77
 	double gibbsenergymin, gibbsenergymax, amix, bmix, A, B, sumat;
 	double Z, dens, vol, Z_;
 
-	std::tuple<double, double> get_a_b(double T, double Pc, double Tc, double w)
+	/**
+	 * Get the Peng-Robinson critical parameters (a,b)
+	 *
+	 * @param T Temperature of the fluid.
+	 * @param Pc Critical Pressure of the Fluid.
+	 * @param Tc Critical Temperature of the fluid.
+	 * @param w Acentric Factor of the fluid.
+	 * @return A Tuple containin a and b.
+	 */
+	std::tuple<double, double> get_critical_properties(double T, double Pc, double Tc, double w)
 	{
 		double Tr = T / Tc;
 		double kappa = 0.37464 + 1.54226 * w - 0.26992 * w * w;
-		double alpha = pow(1 + kappa * (1 - sqrt(Tr)), 2.0);
+		double alpha = std::pow(1 + kappa * (1 - sqrt(Tr)), 2.0);
 		double a = 0.457235 * R * R * Tc * Tc * alpha / Pc;
 		double b = 0.077796 * R * Tc / Pc;
 		return std::make_tuple(a, b);
 	}
 
-	std::tuple<double, double, double, double> get_gibbs_energy(double P, vector<double> Z, double A, double B, int min_or_max)
+	/**
+	 * Get the Gibbs energy from a compressibility factor
+	 *
+	 * @param P Pressure of the fluid.
+	 * @param Z List of compressibility factors.
+	 * @param A Non-dimensional A parameter
+	 * @param B Non-dimensional B parameter
+	 * @param min_or_max Flag to check the minimal (= 0) or maximum (=1) compressibility factor of the list
+	 * @return A Tuple containing the gibbs energy, compressibility factor, fugacity coefficient and fugacity.
+	 */
+	std::tuple<double, double, double, double> get_gibbs_energy(double P, std::vector<double> Z, double A, double B, int min_or_max)
 	{
 		double phi, fug;
 		if (min_or_max == 0)
@@ -52,22 +74,30 @@ class pr77
 	}
 
 public:
+	/**
+	 * Get the properties of a mono-component fluid.
+	 *
+	 * @param P Pressure of the fluid.
+	 * @param T Temperature of the fluid.
+	 * @param fluid fluid properties.
+	 * @return Struct containing the fluid properties.
+	 */
 	struct mono_eos get_mono_fluid_properties(double P, double T, Fluid fluid)
 	{
 
 		double phi, fug, phi_min, phi_max, fug_min, fug_max;
 		double a, b;
 
-		tie(a, b) = get_a_b(T, fluid.Pc, fluid.Tc, fluid.w);
+		std::tie(a, b) = get_critical_properties(T, fluid.critical_pressure, fluid.critical_temperature, fluid.acentric_factor);
 
 		double A = a * P / R / R / T / T;
 		double B = b * P / R / T;
 
-		vector<double> Z = find_z(A, B);
+		std::vector<double> Z = find_z(A, B);
 
 		// Calculate the proper Minimal Gibbs Energy
-		tie(gibbsenergymin, Zmin, phi_min, fug_min) = get_gibbs_energy(P, Z, A, B, 0);
-		tie(gibbsenergymax, Zmax, phi_max, fug_max) = get_gibbs_energy(P, Z, A, B, 1);
+		std::tie(gibbsenergymin, Zmin, phi_min, fug_min) = get_gibbs_energy(P, Z, A, B, 0);
+		std::tie(gibbsenergymax, Zmax, phi_max, fug_max) = get_gibbs_energy(P, Z, A, B, 1);
 
 		// Select the proper values
 		if (gibbsenergymin < gibbsenergymax)
@@ -89,7 +119,16 @@ public:
 		return results;
 	}
 
-	struct mix_eos get_mixture_fluid_properties(std::vector<double> x, double P, double T, std::vector<Fluid> fluids_)
+	/**
+	 * Get the properties of a mixture.
+	 *
+	 * @param x Composition fractions for each fluid in the mixture.
+	 * @param P Pressure of the fluid.
+	 * @param T Temperature of the fluid.
+	 * @param fluids List fluids on the mixture.
+	 * @return Struct containing the fluid properties
+	 */
+	struct mix_eos get_mixture_fluid_properties(std::vector<double> x, double P, double T, std::vector<Fluid> fluids)
 	{
 
 		ncomp = x.size();
@@ -113,7 +152,7 @@ public:
 
 		for (i = 0; i < ncomp; i++)
 		{
-			tie(a[i], b[i]) = get_a_b(T, fluids_[i].Pc, fluids_[i].Tc, fluids_[i].w);
+			std::tie(a[i], b[i]) = get_critical_properties(T, fluids[i].critical_pressure, fluids[i].critical_temperature, fluids[i].acentric_factor);
 		}
 
 		// Mixing-rules
@@ -138,7 +177,7 @@ public:
 		A = amix * P / R / R / T / T;
 		B = bmix * P / R / T;
 
-		vector<double> Z = find_z(A, B);
+		std::vector<double> Z = find_z(A, B);
 
 		Zmax = maxvalue(Z[0], Z[1], Z[2]);
 		Zmin = minvalue(Z[0], Z[1], Z[2]);
@@ -188,3 +227,5 @@ public:
 		return results;
 	}
 };
+
+#endif

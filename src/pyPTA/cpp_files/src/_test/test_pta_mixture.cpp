@@ -1,11 +1,11 @@
 #include <iostream>
 #include <vector>
 #include <cassert>
-#include "../pta_pure.h"
+#include "../pta_mixture.h"
 
 int main(void)
 {
-    auto pta_model = PurePTA("DRA", "pr77", "excess", 155);
+    auto pta_model = MixturePTA("DRA", "pr77", "excess", 155);
 
     Fluid co2;
     co2.critical_pressure = 73.773e5;
@@ -19,22 +19,14 @@ int main(void)
 
     std::vector<double> calculated = {0.0834321, 0.438571, 0.623465, 0.909272, 1.15948, 3.61979, 4.93091, 6.24615, 6.6598, 6.9871, 7.0454, 7.0007};
 
-    double
-        n = pta_model.get_loading(10000.0, 318.2, DRA_params, co2);
-
     std::vector<double>
-        ns = pta_model.get_multiple_loadings(pressures, 318.2, DRA_params, co2);
+        ns = pta_model.get_loading({0.25, 0.25, 0.50}, pressures[7], 318.2, {DRA_params, DRA_params, DRA_params}, {co2, co2, co2});
 
     double diff;
     for (std::size_t i = 0; i < ns.size(); i++)
     {
-        diff = calculated[i] - ns[i];
-        assert(diff < 1e-5);
-        std::cout << ".";
+        std::cout << ns[i] << std::endl;
     }
-    std::cout << std::endl;
-    std::cout << ns.size() << " Tests passed"
-              << std::endl;
 
     return 0;
 }

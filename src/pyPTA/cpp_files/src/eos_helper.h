@@ -1,13 +1,8 @@
+#ifndef EOS_HELPER_H
+#define EOS_HELPER_H
 
-
-double R = 8.314462618; // m3 Pa /K / mol
-
-struct Fluid
-{
-	double Pc;
-	double Tc;
-	double w;
-};
+#include <string>
+#include <vector>
 
 struct mono_eos
 {
@@ -16,20 +11,20 @@ struct mono_eos
 
 struct mix_eos
 {
-	vector<double> fug;
+	std::vector<double> fug;
 	double dens;
-	vector<double> phi;
+	std::vector<double> phi;
 	double Z;
 };
 
-vector<double> find_z(double A, double B);
+std::vector<double> find_z(double A, double B);
 double gx(double X, double a0, double a1, double a2);
 double dgx(double X, double a1, double a2);
 double d2gx(double X, double a2);
 double minvalue(double num1, double num2, double num3);
 double maxvalue(double num1, double num2, double num3);
 
-vector<double> find_z(double A, double B)
+std::vector<double> find_z(double A, double B)
 {
 
 	double a2, a1, a0, amax, rr, xinf1, xold, xnew, x1, x2, x3, gx0, gx1, gx2, a, b, c;
@@ -83,7 +78,7 @@ vector<double> find_z(double A, double B)
 		x3 = (-b - sqrt(discrim)) / (2.0 * a);
 	}
 
-	vector<double> results(3, 0.0);
+	std::vector<double> results(3, 0.0);
 	results = {x1, x2, x3};
 
 	return results;
@@ -139,3 +134,5 @@ double maxvalue(double num1, double num2, double num3)
 	}
 	return result;
 }
+
+#endif
