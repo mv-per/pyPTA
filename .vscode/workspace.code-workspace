@@ -6,9 +6,10 @@
   ],
   "settings": {
     "autoDocstring.docstringFormat": "sphinx",
+    "c-cpp-flylint.flexelint.enable": false,
     "terminal.integrated.fontSize": 16,
     "workbench.tree.indent": 20,
-    "workbench.colorTheme": "Shades of Purple",
+    "workbench.colorTheme": "Default Dark+",
     "workbench.colorCustomizations": {
       "tree.indentGuidesStroke": "#3cff00",
       "tree.tableColumnsBorder": "#39b309",

@@ -29,12 +29,12 @@ double STEELE(double z, double eps_k, double sigma_ff, Adsorbent adsorbent_prope
 {
 	double epsilon_fs = eps_k * BOLTZMANN_CONSTANT;
 	double sigma_fs = (adsorbent_properties.sigma_ss + sigma_ff) / 2.0; // Angstrom
-	double DDelta = 3.35;												// Angstroms
+	double d_delta = 3.35;												// Angstroms
 	double rho_s = 0.114;												// Angstroms-3
-	double PSI1 = 2.0 * PI * rho_s * epsilon_fs * sigma_fs * sigma_fs * DDelta;
 	double division = sigma_fs / z;
-	double PSI2 = 0.4 * std::pow(division, 10.0) - std::pow(division, 4.0) - std::pow(sigma_fs, 4.0) / (3.0 * DDelta * std::pow(z + 0.61 * DDelta, 3.0));
-	//
+	double PSI1 = 2.0 * PI * rho_s * epsilon_fs * sigma_fs * sigma_fs * d_delta;
+	double PSI2 = 0.4 * std::pow(division, 10.0) - std::pow(division, 4.0) - std::pow(sigma_fs, 4.0) / (3.0 * d_delta * std::pow(z + 0.61 * d_delta, 3.0));
+
 	return PSI1 * PSI2;
 }
 
