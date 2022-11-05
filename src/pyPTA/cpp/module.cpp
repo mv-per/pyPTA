@@ -1,7 +1,7 @@
-#include "include/pybind11/pybind11.h"
-#include "include/pybind11/embed.h"
-#include "include/pybind11/stl.h"
+#include <pybind11/stl.h>
 
+#include <pybind11/pybind11.h>
+#include <pybind11/embed.h>
 #include "src/data_classes.h"
 #include "src/pta_pure.h"
 #include "src/pta_mixture.h"

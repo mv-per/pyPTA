@@ -1,4 +1,0 @@
-numpy>=1.17.3
-scipy>=1.5.4
-attrs>=19.1.0
-attrs_strict==0.2.2
