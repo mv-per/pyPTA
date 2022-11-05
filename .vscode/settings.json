@@ -1,28 +1,87 @@
 {
     "python.linting.enabled": true,
-    "python.testing.pytestArgs": [
-        "src"
+    "autoDocstring.docstringFormat": "sphinx",
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true
+    },
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "python.formatting.provider": "black",
+    "python.formatting.blackArgs": [
+        "-t",
+        "py37"
     ],
-    "python.linting.pylintEnabled": true,
-    "python.analysis.extraPaths": [
-        "src",
+    "python.autoComplete.extraPaths": [
+        "./src"
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
-    "python.testing.unittestArgs": [
-        "-v",
-        "-s",
-        "./src",
-        "-p",
-        "test_*.py"
-    ],
-    // "terminal.integrated.env.windows": {
-    //     "PYTHONPATH": "${env:PYTHONPATH};${workspaceFolder}/src"
-    // },
-    // "terminal.integrated.env.linux": {
-    //     "PYTHONPATH": "${env:PYTHONPATH};${workspaceFolder}/src"
-    // },
-    // "terminal.integrated.env.osx": {
-    //     "PYTHONPATH": "${env:PYTHONPATH};${workspaceFolder}/src"
-    // }
+    "files.associations": {
+        "cmath": "cpp",
+        "array": "cpp",
+        "atomic": "cpp",
+        "bit": "cpp",
+        "*.tcc": "cpp",
+        "cctype": "cpp",
+        "chrono": "cpp",
+        "clocale": "cpp",
+        "codecvt": "cpp",
+        "complex": "cpp",
+        "condition_variable": "cpp",
+        "cstdarg": "cpp",
+        "cstddef": "cpp",
+        "cstdint": "cpp",
+        "cstdio": "cpp",
+        "cstdlib": "cpp",
+        "cstring": "cpp",
+        "ctime": "cpp",
+        "cwchar": "cpp",
+        "cwctype": "cpp",
+        "deque": "cpp",
+        "forward_list": "cpp",
+        "list": "cpp",
+        "map": "cpp",
+        "set": "cpp",
+        "unordered_map": "cpp",
+        "unordered_set": "cpp",
+        "vector": "cpp",
+        "exception": "cpp",
+        "algorithm": "cpp",
+        "functional": "cpp",
+        "iterator": "cpp",
+        "memory": "cpp",
+        "memory_resource": "cpp",
+        "numeric": "cpp",
+        "optional": "cpp",
+        "random": "cpp",
+        "ratio": "cpp",
+        "string": "cpp",
+        "string_view": "cpp",
+        "system_error": "cpp",
+        "tuple": "cpp",
+        "type_traits": "cpp",
+        "utility": "cpp",
+        "fstream": "cpp",
+        "initializer_list": "cpp",
+        "iomanip": "cpp",
+        "iosfwd": "cpp",
+        "iostream": "cpp",
+        "istream": "cpp",
+        "limits": "cpp",
+        "mutex": "cpp",
+        "new": "cpp",
+        "ostream": "cpp",
+        "sstream": "cpp",
+        "stdexcept": "cpp",
+        "streambuf": "cpp",
+        "thread": "cpp",
+        "cinttypes": "cpp",
+        "typeindex": "cpp",
+        "typeinfo": "cpp",
+        "valarray": "cpp",
+        "variant": "cpp"
+    },
+    "python.analysis.extraPaths": [
+        "./src"
+    ]
 }

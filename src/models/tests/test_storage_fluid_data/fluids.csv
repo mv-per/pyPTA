@@ -1,6 +1,0 @@
-name,formula,molar_mass,critical_pressure,critical_temperature,critical_compressibility,accentric_factor,lj_diameter
-Carbon Dioxide,CO2,44.0098,7.38E+06,304.13,0.2746,0.22394,3.941
-Methane,CH4,16.043,4.60E+06,190.56,0.2863,0.011,3.798
-Hydrogen Sulfide,H2S,34.08,9.00E+06,373.1,0.2847,0.1,0
-Helium,He,4.003,2.27E+05,5.16,0.301,-0.39,0
-Nitrogen,N2,28.01,3.40E+06,126.19,0.2894,0.037,3.758
