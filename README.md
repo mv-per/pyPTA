@@ -1,4 +1,4 @@
-#Under development
+# Under development
 
 # pyPTA
 Python package for Multicomponent Potential Theory of Adsorption
