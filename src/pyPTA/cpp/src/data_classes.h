@@ -1,33 +1,49 @@
-// some_header_file.h
 #ifndef DATA_CLASSES_H
 #define DATA_CLASSES_H
 
-struct Fluid
+#include <string>
+
+class Fluid
 {
 
-    Fluid(){};
-    ~Fluid(){};
-
-    double critical_pressure;
-    double critical_temperature;
-    double critical_compressibility;
-    double acentric_factor;
-    double lj_diameter;
-    double lj_energy;
+public:
+    std::string Name;
+    double CriticalPressure;
+    double CriticalTemperature;
+    double CriticalCompressibility;
+    double AccentricFactor;
+    double LennardJonnesDiameter;
+    double LennardJonnesEnergy;
+    ~Fluid() {}
+    Fluid() {}
+    Fluid(std::string name, double critical_pressure, double critical_temperature, double accentric_factor, double critical_compressibility = 0.0, double lj_diameter = 0.0, double lj_energy = 0.0)
+    {
+        this->Name = name;
+        this->CriticalPressure = critical_pressure;
+        this->CriticalTemperature = critical_temperature;
+        this->AccentricFactor = accentric_factor;
+        this->CriticalCompressibility = critical_compressibility;
+        this->LennardJonnesDiameter = lj_diameter;
+        this->LennardJonnesEnergy = lj_energy;
+    }
 };
 
-struct Adsorbent
+class Adsorbent
 {
 
+public:
+    std::string Name;
+    double SolidDiameter;      // sigma_ss
+    double SolidAtomicDensity; // rho_atoms
     Adsorbent() {}
-    Adsorbent(double sigma_ss_, double rho_atoms_)
+    Adsorbent(std::string name, double solid_diameter, double solid_atomic_density)
     {
-        sigma_ss = sigma_ss_;
-        rho_atoms = rho_atoms_;
+        this->Name = name;
+        this->SolidDiameter = solid_diameter;
+        this->SolidAtomicDensity = solid_atomic_density;
     }
-    ~Adsorbent() {}
 
-    double sigma_ss, rho_atoms;
+    ~Adsorbent() {}
 };
 
 #endif

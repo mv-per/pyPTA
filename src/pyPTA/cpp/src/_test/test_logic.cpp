@@ -1,22 +1,29 @@
-#include <iostream>
+
+#include <gtest/gtest.h>
 #include <functional>
-#include "../pr77.h"
+#include "../equations_of_state/pr77.h"
 
 typedef std::function<mono_eos(double, double)> call_eos;
 
-std::function<mono_eos(double, double)> get_equation_of_state(std::vector<double> eos_params)
+std::function<mono_eos(double, double)> GetEquationOfStateInvoker(Fluid fluid)
 {
     return [=](double P, double T)
     {
-        return pr77().get_mono_fluid_properties(P, T, eos_params[0], eos_params[1], eos_params[2]);
+        return pr77().get_mono_fluid_properties(P, T, fluid);
     };
 }
 
-int main()
+TEST(test_logic, DemonstrateEOSPointerLogic)
 {
-    call_eos eos_pointer = get_equation_of_state({73e5, 303, 0.222});
 
-    cout << eos_pointer(1000000, 303).fug << endl;
+    Fluid co2;
+    co2.CriticalPressure = 73.773e5;
+    co2.CriticalTemperature = 304.13;
+    co2.AccentricFactor = 0.22394;
 
-    return 0;
+    call_eos eos_pointer = GetEquationOfStateInvoker(co2);
+
+    double fugacity = eos_pointer(1000000, 303).fug;
+
+    EXPECT_NEAR(fugacity, 948684.4705, 1e-2);
 }

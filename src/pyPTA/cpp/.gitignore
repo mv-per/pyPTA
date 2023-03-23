@@ -1,0 +1,5 @@
+.history/*
+.vscode/*
+.vscode
+googletest/*
+pybind11/*
