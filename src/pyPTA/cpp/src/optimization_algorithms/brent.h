@@ -3,6 +3,7 @@
 #ifndef BRENT_H
 #define BRENT_H
 
+#include <functional>
 #include <cmath>
 
 /**
@@ -21,7 +22,7 @@ double sign(double value1, double value2);
  * @param tol Minimum `TOL` .
  * @return Value of the value with minimal :fun: value.
  */
-double brent_zeroin(double (*fun)(double), double x, double tol);
+double brent_zeroin(std::function<double(double)> fun, double x, double tol);
 
 template <class T>
 T removenegative(T oldArray);

@@ -25,6 +25,7 @@ class PurePTA
 {
 	call_mono_get_load Loader;
 	Adsorbent adsorbent;
+	Fluid fluid;
 
 public:
 	std::string Potential;
@@ -60,7 +61,7 @@ public:
 	 * @param fluid Fluid properties.
 	 * @return List of calculated loadings
 	 */
-	std::vector<double> GetMultipleLoadings(std::vector<double> P, double T, std::vector<double> potential_params, Fluid fluid);
+	std::vector<double> GetLoadings(std::vector<double> P, double T, std::vector<double> potential_params, Fluid fluid);
 	/**
 	 * Get the deviation between calculated experimental loadings
 	 *

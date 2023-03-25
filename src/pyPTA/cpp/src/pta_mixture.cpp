@@ -240,15 +240,13 @@ struct Equilibrium MixturePTA::find_equilibrium_properties(double Pz_old, std::v
 	{
 
 		// Set the Equilibrium lambda function
-		static auto min = [&](double x)
+		auto min = [&](double x)
 		{
 			return get_equilibrium_difference(x, new_adsorbed_composition, fb, f_eps, T, eos);
 		};
-		double (*minfun_pointer)(double) = [](double x)
-		{ return min(x); };
 
 		// Find the Equilibrium pressure for the current composition
-		Pz = brent_zeroin(minfun_pointer, Pz, 1.0e-12);
+		Pz = brent_zeroin(min, Pz, 1.0e-12);
 
 		// Get the fluid properties
 		struct mix_eos adsorbed = eos(new_adsorbed_composition, Pz, T);

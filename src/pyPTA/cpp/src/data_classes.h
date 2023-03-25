@@ -33,8 +33,8 @@ class Adsorbent
 
 public:
     std::string Name;
-    double SolidDiameter;      // sigma_ss
-    double SolidAtomicDensity; // rho_atoms
+    double SolidDiameter;      // sigma_ss, Angstrom
+    double SolidAtomicDensity; // rho_atoms, Angstrom
     Adsorbent() {}
     Adsorbent(std::string name, double solid_diameter, double solid_atomic_density)
     {

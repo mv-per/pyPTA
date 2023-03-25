@@ -1,7 +1,7 @@
 #include "math.h"
 #include "eos_helper.h"
 
-double R = 8.314462618;
+const double R = 8.314462618;
 
 std::vector<double>
 find_z(double A, double B)
@@ -58,8 +58,7 @@ find_z(double A, double B)
         x3 = (-b - sqrt(discrim)) / (2.0 * a);
     }
 
-    std::vector<double> results(3, 0.0);
-    results = {x1, x2, x3};
+    std::vector<double> results = {x1, x2, x3};
 
     return results;
 }
@@ -81,36 +80,32 @@ double d2gx(double X, double a2)
 
 double minvalue(double num1, double num2, double num3)
 {
-    double result;
     if ((num1 < num2) && (num1 < num3) && (fabs(num1) == num1) && (fabs(num2) == num2) && (fabs(num3) == num3))
     {
-        result = num1;
+        return num1;
     }
     else if ((num2 < num1) && (num2 < num3) && (fabs(num1) == num1) && (fabs(num2) == num2) && (fabs(num3) == num3))
     {
-        result = num2;
+        return num2;
     }
     else
     {
-        result = num3;
+        return num3;
     }
-    return result;
 }
 
 double maxvalue(double num1, double num2, double num3)
 {
-    double result;
     if ((num1 > num2) && (num1 > num3))
     {
-        result = num1;
+        return num1;
     }
     else if ((num2 > num1) && (num2 > num3))
     {
-        result = num2;
+        return num2;
     }
     else
     {
-        result = num3;
+        return num3;
     }
-    return result;
 }

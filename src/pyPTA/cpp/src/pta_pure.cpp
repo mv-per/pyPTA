@@ -20,6 +20,7 @@ PurePTA::PurePTA(std::string potential, std::string equation_of_state, std::stri
  */
 double PurePTA::GetLoading(double P, double T, std::vector<double> potential_params, Fluid fluid)
 {
+    this->fluid = fluid;
     call_potential get_potential = GetAdsorptionPotentialInvoker(potential_params, fluid, this->adsorbent);
     call_mono_eos eos_caller = GetEquationOfStateInvoker(fluid);
     double Loading = this->Loader(P, T, potential_params, eos_caller, get_potential);
@@ -35,18 +36,18 @@ double PurePTA::GetLoading(double P, double T, std::vector<double> potential_par
  * @param fluid Fluid properties.
  * @return List of calculated loadings
  */
-std::vector<double> PurePTA::GetMultipleLoadings(std::vector<double> P, double T, std::vector<double> potential_params, Fluid fluid)
+std::vector<double> PurePTA::GetLoadings(std::vector<double> P, double T, std::vector<double> potential_params, Fluid fluid)
 {
     std::vector<double>
         loadings(P.size());
 
+    this->fluid = fluid;
     call_potential get_potential = GetAdsorptionPotentialInvoker(potential_params, fluid, this->adsorbent);
     call_mono_eos eos_caller = GetEquationOfStateInvoker(fluid);
 
     for (std::size_t i = 0; i < P.size(); i++)
     {
         loadings[i] = this->Loader(P[i], T, potential_params, eos_caller, get_potential);
-        // loadings[i] = this->GetLoading(P[i], T, potential_params, fluid);
     }
 
     return loadings;
@@ -68,7 +69,7 @@ double PurePTA::GetDeviationRange(std::string deviation_type,
 
     double difference = 0.;
 
-    std::vector<double> calc_loading = this->GetMultipleLoadings(P, T, potential_params, fluid);
+    std::vector<double> calc_loading = this->GetLoadings(P, T, potential_params, fluid);
 
     for (std::size_t i = 0; i < P.size(); i++)
     {
@@ -210,7 +211,7 @@ double PurePTA::GetDRAAdsorbedAmout(double bulk_pressure, double temperature, st
     {
         eps = get_potential(z[i]);
         f_eps = this->GetAdsorptionPotentialEnergy(eps, temperature);
-        Pz = solver.find_pz(Pz, f_eps);
+        Pz = solver.findOptimizedPressure(Pz, f_eps);
 
         struct mono_eos adsorbed = eos(Pz, temperature);
         integral[i] = this->GetCalculatedAdsorbedDensity(adsorbed.dens, bulk.dens) * 1e-3;
@@ -232,7 +233,7 @@ double PurePTA::GetLJAdsorbedAmout(
 
     // Initial estimates for the adsorbed region
     Pz = BulkPressure;
-    double minimal_space = 0.7 * PotentialParameters[1];
+    double minimal_space = 0.7 * this->fluid.LennardJonnesDiameter;
 
     std::vector<double>
         z = linespace(PotentialParameters[1] / 2.0, minimal_space, this->NumberOfLayers);
@@ -245,7 +246,7 @@ double PurePTA::GetLJAdsorbedAmout(
     {
         eps = get_potential(z[i]) + get_potential(PotentialParameters[1] - z[i]);
         f_eps = this->GetAdsorptionPotentialEnergy(eps, Temperature);
-        Pz = solver.find_pz(Pz, f_eps);
+        Pz = solver.findOptimizedPressure(Pz, f_eps);
 
         struct mono_eos adsorbed = EquationOfStateInvoker(Pz, Temperature);
         integral[i] = this->GetCalculatedAdsorbedDensity(adsorbed.dens, bulk.dens);

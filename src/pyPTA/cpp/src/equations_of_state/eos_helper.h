@@ -5,7 +5,7 @@
 #include <vector>
 
 /// Gas contsant, [m3 Pa /K / mol]
-extern double R;
+extern const double R;
 
 struct mono_eos
 {

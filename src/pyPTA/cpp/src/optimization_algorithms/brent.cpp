@@ -24,7 +24,7 @@ double sign(double value1, double value2)
  * @param tol Minimum `TOL` .
  * @return Value of the value with minimal :fun: value.
  */
-double brent_zeroin(double (*fun)(double), double x, double tol)
+double brent_zeroin(std::function<double(double)> fun, double x, double tol)
 {
     double a, b, c, d, e, fa, fb, fc, tol1, xm, p, q, r, s, eps, fx, dx;
 

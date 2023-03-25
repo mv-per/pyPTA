@@ -13,18 +13,19 @@
 
 class PTASolver
 {
+private:
     double BulkFugacity, PotentialEnergy, Temperature;
     call_mono_eos EquationOfState;
+    double OptimizedPressure;
+    
     /// Default tolerance
     double DEFAULT_TOL = 1e-12;
 
+    double equilibrium(double p_,
+                       double f_eps);
 public:
     PTASolver(double bulk_fugacity, double temperature, call_mono_eos eos);
-    double find_pz(double InitialEstimate, double f_eps);
-    double equilibrium(double p_,
-                       double bulk_fugacity,
-                       double f_eps,
-                       double T,
-                       call_mono_eos eos);
+    double findOptimizedPressure(double InitialEstimate, double f_eps);
+    
 };
 #endif
