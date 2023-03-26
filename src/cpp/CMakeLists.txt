@@ -1,8 +1,8 @@
-cmake_minimum_required(VERSION 3.25.0)
+cmake_minimum_required(VERSION 3.26.0)
 
-set(This pyPTA)
+set(This cPTA)
 
-project(${This} C CXX)
+project(${This} VERSION 0.1.0 )
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 17)
@@ -13,15 +13,17 @@ set(gtest_force_shared_crt ON)
 
 enable_testing()
 
-
-add_subdirectory(googletest)
-# add_subdirectory(pybind11)
-
 # Src
 AUX_SOURCE_DIRECTORY(src SRC_FILES)
 
 # Headers
 set(PROJECT_SOURCE_DIR src)
+
+
+
+add_subdirectory(googletest)
+add_subdirectory(${PROJECT_SOURCE_DIR}/_test)
+
 
 set(Headers
     ${PROJECT_SOURCE_DIR}/helpers.h
@@ -39,7 +41,6 @@ set(Headers
 )
 
 set(Sources
-    module.cpp
     ${PROJECT_SOURCE_DIR}/helpers.cpp
     ${PROJECT_SOURCE_DIR}/adsorption_potentials.cpp
     ${PROJECT_SOURCE_DIR}/pta_solver.cpp
@@ -51,6 +52,20 @@ set(Sources
     ${PROJECT_SOURCE_DIR}/optimization_algorithms/brent.cpp
 )
 
-add_library(${This} STATIC ${Sources} ${Headers})
+# source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${Sources})
 
-add_subdirectory(src/_test)
+add_library(${This} STATIC ${Sources} ${Headers})
+# add_library(${This} SHARED ${Sources})
+
+
+# # Include directories
+# target_include_directories(automobile PRIVATE include/automobile_bits)
+
+# Install
+# install(TARGETS ${This} DESTINATION lib)
+
+# Install the headers
+# install(FILES ${Headers} DESTINATION include)
+
+# Create base directory
+# install(DIRECTORY ${Headers} DESTINATION include)
