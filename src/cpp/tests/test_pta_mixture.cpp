@@ -2,23 +2,22 @@
 #include <gtest/gtest.h>
 #include <vector>
 #include <cassert>
-#include "../pta_mixture.h"
+#include "../src/pta_mixture.h"
 
 TEST(test_pta_mixture, testMixtureCalculation)
 {
     auto pta_model = MixturePTA("DRA", "pr77", "excess", 155);
 
-
     Fluid co2;
     co2.CriticalPressure = 73.773e5;
     co2.CriticalTemperature = 304.13;
     co2.AccentricFactor = 0.22394;
-    
+
     Fluid ch4;
     ch4.CriticalPressure = 45.992e5;
     ch4.CriticalTemperature = 190.56;
-    ch4.AccentricFactor = 	0.01142;
-    
+    ch4.AccentricFactor = 0.01142;
+
     std::vector<double> CO2_DRA_params = {7880.19, 0.29, 2.};
     std::vector<double> CH4_DRA_params = {5600, 0.36, 3.};
 
@@ -31,7 +30,6 @@ TEST(test_pta_mixture, testMixtureCalculation)
     std::vector<double>
         ns = pta_model.GetLoading(bulk_composition_fraction, pressures[7], 318.2, {CO2_DRA_params, CH4_DRA_params}, {co2, ch4});
 
-    
     ASSERT_EQ(bulk_composition_fraction.size(), ns.size());
 }
 
@@ -43,12 +41,12 @@ TEST(test_pta_mixture, testMixtureCalculationThreeComponents)
     co2.CriticalPressure = 73.773e5;
     co2.CriticalTemperature = 304.13;
     co2.AccentricFactor = 0.22394;
-    
+
     Fluid ch4;
     ch4.CriticalPressure = 45.992e5;
     ch4.CriticalTemperature = 190.56;
-    ch4.AccentricFactor = 	0.01142;
-    
+    ch4.AccentricFactor = 0.01142;
+
     Fluid n2;
     n2.CriticalPressure = 33.958e5;
     n2.CriticalTemperature = 126.192;

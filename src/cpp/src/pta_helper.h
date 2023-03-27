@@ -68,8 +68,6 @@ double GetCalculatedAdsorbedDensity(double adsorbed_density, double bulk_density
 
 double integrate(std::vector<double> integral_vector, double step);
 
-auto get_mono_equation_of_state(std::string eos);
-
 /**
  * Returns a new set of adsorbed fractions for a specific Pz
  *

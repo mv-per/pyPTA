@@ -1,7 +1,7 @@
 
 #include <gtest/gtest.h>
 #include <functional>
-#include "../equations_of_state/pr77.h"
+#include "../src/equations_of_state/pr77.h"
 
 typedef std::function<mono_eos(double, double)> call_eos;
 

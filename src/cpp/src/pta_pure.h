@@ -86,8 +86,6 @@ private:
 	 * Get the potential function based on its energy interation and temperature
 	 *
 	 */
-	double GetAdsorptionPotentialEnergy(double eps, double T);
-	double GetCalculatedAdsorbedDensity(double adsorbed_density, double bulk_density);
 	double GetDRAAdsorbedAmout(double bulk_pressure, double temperature, std::vector<double> potential_params, call_mono_eos eos, call_potential get_potential);
 	double GetLJAdsorbedAmout(double Pb, double T, std::vector<double> potential_params, call_mono_eos eos, call_potential get_potential);
 };

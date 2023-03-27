@@ -153,42 +153,6 @@ std::function<double(double)> PurePTA::GetAdsorptionPotentialInvoker(std::vector
     }
 }
 
-/**
- * Get the potential function based on its energy interation and temperature
- *
- */
-double PurePTA::GetAdsorptionPotentialEnergy(double eps, double T)
-{
-    if (this->Potential == "DRA")
-    {
-        return exp(eps / (8.314 * T));
-    }
-    else if (this->Potential == "STEELE" || this->Potential == "LEE")
-    {
-        return exp(-eps / (1.38064852e-23 * T));
-    }
-    else
-    {
-        throw std::invalid_argument("Isotherm potential not found/defined.");
-    }
-}
-
-double PurePTA::GetCalculatedAdsorbedDensity(double adsorbed_density, double bulk_density)
-{
-    if (this->IsothermType == "excess")
-    {
-        return adsorbed_density - bulk_density;
-    }
-    else if (this->IsothermType == "absolute")
-    {
-        return adsorbed_density;
-    }
-    else
-    {
-        throw std::invalid_argument("Isotherm type not found/defined. Available types: excess, absolute");
-    }
-}
-
 double PurePTA::GetDRAAdsorbedAmout(double bulk_pressure, double temperature, std::vector<double> potential_params, call_mono_eos eos, call_potential get_potential)
 {
 
@@ -210,11 +174,11 @@ double PurePTA::GetDRAAdsorbedAmout(double bulk_pressure, double temperature, st
     for (std::size_t i = 0; i < z.size(); i++)
     {
         eps = get_potential(z[i]);
-        f_eps = this->GetAdsorptionPotentialEnergy(eps, temperature);
+        f_eps = GetAdsorptionPotentialEnergy(eps, temperature, this->Potential);
         Pz = solver.findOptimizedPressure(Pz, f_eps);
 
         struct mono_eos adsorbed = eos(Pz, temperature);
-        integral[i] = this->GetCalculatedAdsorbedDensity(adsorbed.dens, bulk.dens) * 1e-3;
+        integral[i] = GetCalculatedAdsorbedDensity(adsorbed.dens, bulk.dens, this->IsothermType) * 1e-3;
     }
     return integrate(integral, delta);
 }
@@ -245,11 +209,11 @@ double PurePTA::GetLJAdsorbedAmout(
     for (std::size_t i = 0; i < z.size(); i++)
     {
         eps = get_potential(z[i]) + get_potential(PotentialParameters[1] - z[i]);
-        f_eps = this->GetAdsorptionPotentialEnergy(eps, Temperature);
+        f_eps = GetAdsorptionPotentialEnergy(eps, Temperature, this->Potential);
         Pz = solver.findOptimizedPressure(Pz, f_eps);
 
         struct mono_eos adsorbed = EquationOfStateInvoker(Pz, Temperature);
-        integral[i] = this->GetCalculatedAdsorbedDensity(adsorbed.dens, bulk.dens);
+        integral[i] = GetCalculatedAdsorbedDensity(adsorbed.dens, bulk.dens, this->IsothermType);
     }
     return -PotentialParameters[2] * integrate(integral, delta) * 1e-7;
 }

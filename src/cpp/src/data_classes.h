@@ -16,15 +16,21 @@ public:
     double LennardJonnesEnergy;
     ~Fluid() {}
     Fluid() {}
-    Fluid(std::string name, double critical_pressure, double critical_temperature, double accentric_factor, double critical_compressibility = 0.0, double lj_diameter = 0.0, double lj_energy = 0.0)
+    Fluid(std::string Name,
+          double CriticalPressure,
+          double CriticalTemperature,
+          double AccentricFactor,
+          double CriticalCompressibility = 0.0,
+          double LennardJonnesDiameter = 0.0,
+          double LennardJonnesEnergy = 0.0)
     {
-        this->Name = name;
-        this->CriticalPressure = critical_pressure;
-        this->CriticalTemperature = critical_temperature;
-        this->AccentricFactor = accentric_factor;
-        this->CriticalCompressibility = critical_compressibility;
-        this->LennardJonnesDiameter = lj_diameter;
-        this->LennardJonnesEnergy = lj_energy;
+        this->Name = Name;
+        this->CriticalPressure = CriticalPressure;
+        this->CriticalTemperature = CriticalTemperature;
+        this->AccentricFactor = AccentricFactor;
+        this->CriticalCompressibility = CriticalCompressibility;
+        this->LennardJonnesDiameter = LennardJonnesDiameter;
+        this->LennardJonnesEnergy = LennardJonnesEnergy;
     }
 };
 
@@ -36,11 +42,11 @@ public:
     double SolidDiameter;      // sigma_ss, Angstrom
     double SolidAtomicDensity; // rho_atoms, Angstrom
     Adsorbent() {}
-    Adsorbent(std::string name, double solid_diameter, double solid_atomic_density)
+    Adsorbent(std::string Name, double SolidDiameter, double SolidAtomicDensity)
     {
-        this->Name = name;
-        this->SolidDiameter = solid_diameter;
-        this->SolidAtomicDensity = solid_atomic_density;
+        this->Name = Name;
+        this->SolidDiameter = SolidDiameter;
+        this->SolidAtomicDensity = SolidAtomicDensity;
     }
 
     ~Adsorbent() {}

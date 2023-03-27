@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 #include <vector>
-#include "../pta_pure.h"
-
+#include "../src/pta_pure.h"
 
 TEST(test_pta_pure, TestSinglePTALoading)
 {
@@ -37,7 +36,6 @@ TEST(test_pta_pure, TestSinglePTALoading2)
     EXPECT_NEAR(adsorbed_loading, 5.62658, 1e-4);
 };
 
-
 TEST(test_pta_pure, TestGetMultiplePurePTA)
 {
 
@@ -62,11 +60,10 @@ TEST(test_pta_pure, TestGetMultiplePurePTA)
     ASSERT_EQ(pressures.size(), ExpectedLoadings.size());
     for (std::size_t i = 0; i < CalculatedLoadings.size(); i++)
     {
-        EXPECT_NEAR(ExpectedLoadings[i], CalculatedLoadings[i], 1e-2);;
+        EXPECT_NEAR(ExpectedLoadings[i], CalculatedLoadings[i], 1e-2);
+        ;
     }
 };
-
-
 
 TEST(test_pta_pure, TestGetMultiplePureDeviationDRA)
 {
@@ -84,12 +81,11 @@ TEST(test_pta_pure, TestGetMultiplePureDeviationDRA)
 
     std::vector<double> experimental = {0.0834321, 0.438571, 0.623465, 0.909272, 1.15948, 3.61979, 4.93091, 6.24615, 6.6598, 6.9871, 7.0454, 7.0007};
 
-    double CalculatedDeviation = pta_model.GetDeviationRange("absolute", experimental, pressures,  318.2, CO2DRAParams, co2);
+    double CalculatedDeviation = pta_model.GetDeviationRange("absolute", experimental, pressures, 318.2, CO2DRAParams, co2);
 
     ASSERT_EQ(pressures.size(), experimental.size());
 
     EXPECT_NEAR(CalculatedDeviation, 0.0, 1e-4);
-
 };
 
 TEST(test_pta_pure, TestGetMultiplePureDeviationLEE)
@@ -112,14 +108,12 @@ TEST(test_pta_pure, TestGetMultiplePureDeviationLEE)
 
     std::vector<double> experimental = {0.0834321, 0.438571, 0.623465, 0.909272, 1.15948, 3.61979, 4.93091, 6.24615, 6.6598, 6.9871, 7.0454, 7.0007};
 
-    double CalculatedDeviation = pta_model.GetDeviationRange("absolute", experimental, pressures,  318.2, CO2LEEParams, co2);
+    double CalculatedDeviation = pta_model.GetDeviationRange("absolute", experimental, pressures, 318.2, CO2LEEParams, co2);
 
     ASSERT_EQ(pressures.size(), experimental.size());
 
     EXPECT_NEAR(CalculatedDeviation, 2.5183, 1e-4);
-
 };
-
 
 TEST(test_pta_pure, TestGetMultiplePureDeviationSTEELE)
 {
@@ -141,10 +135,9 @@ TEST(test_pta_pure, TestGetMultiplePureDeviationSTEELE)
 
     std::vector<double> experimental = {0.0834321, 0.438571, 0.623465, 0.909272, 1.15948, 3.61979, 4.93091, 6.24615, 6.6598, 6.9871, 7.0454, 7.0007};
 
-    double CalculatedDeviation = pta_model.GetDeviationRange("absolute", experimental, pressures,  318.2, CO2LEEParams, co2);
+    double CalculatedDeviation = pta_model.GetDeviationRange("absolute", experimental, pressures, 318.2, CO2LEEParams, co2);
 
     ASSERT_EQ(pressures.size(), experimental.size());
 
     EXPECT_NEAR(CalculatedDeviation, 14.52642, 1e-4);
-
 };
