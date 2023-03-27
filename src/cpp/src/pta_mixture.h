@@ -25,6 +25,8 @@ public:
 	Adsorbent adsorbent;
 	double min_int;
 
+	~MixturePTA() {}
+
 	/**
 	 * MixturePTA
 	 *

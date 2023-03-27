@@ -1,14 +1,5 @@
 
 
-#include "cpp/src/equations_of_state/eos.h"
-#include "cpp/src/equations_of_state/eos_helper.h"
-#include "cpp/src/equations_of_state/pr77.h"
-#include "cpp/src/optimization_algorithms/brent.h"
-#include "cpp/src/data_classes.h"
-#include "cpp/src/adsorption_potentials.h"
-#include "cpp/src/helpers.h"
-#include "cpp/src/pta_helper.h"
-#include "cpp/src/pta_solver.h"
 #include "cpp/src/pta_pure.h"
 #include "cpp/src/pta_mixture.h"
 
@@ -46,14 +37,14 @@ PYBIND11_MODULE(pyPTA, m)
         .def_readwrite("Potential", &PurePTA::Potential)
         .def_readwrite("EquationOfState", &PurePTA::EquationOfState)
         .def_readwrite("IsothermType", &PurePTA::IsothermType)
-        .def_readwrite("NumberOfLayers", &PurePTA::NumberOfLayers)
-        .def("GetLoading", &PurePTA::GetLoading,
-             "Get single-component loading",
-             py::arg("pressure"),
-             py::arg("temperature"),
-             py::arg("adsorption_potential_parameters"),
-             py::arg("fluid"))
-        .def("GetDeviationRange", &PurePTA::GetDeviationRange,
+        .def_readwrite("NumberOfLayers", &PurePTA::NumberOfLayers);
+    .def("get_loading", &PurePTA::GetLoading,
+         "Get single-component loading",
+         py::arg("pressure"),
+         py::arg("temperature"),
+         py::arg("adsorption_potential_parameters"),
+         py::arg("fluid"))
+        .def("get_deviation_range", &PurePTA::GetDeviationRange,
              "Get absolute difference from experimental and calculated loadings",
              py::arg("deviation_type"),
              py::arg("experimental_loading"),
@@ -61,28 +52,34 @@ PYBIND11_MODULE(pyPTA, m)
              py::arg("temperature"),
              py::arg("adsorption_potential_parameters"),
              py::arg("fluid"))
-        .def("GetLoadings", &PurePTA::GetLoadings,
+        .def("get_loadings", &PurePTA::GetLoadings,
              "Get single-component loading for multiple pressure datapoints",
              py::arg("experimental_pressure"),
              py::arg("temperature"),
              py::arg("adsorption_potential_parameters"),
              py::arg("fluid"));
 
-    // py::class_<MixturePTA>(m, "MixturePTA")
-    //     .def(py::init<std::string &, std::string &, std::string &, std::size_t &>(),
-    //          py::arg("adsorption_potential"),
-    //          py::arg("equation_of_state"),
-    //          py::arg("isotherm_type"),
-    //          py::arg("number_of_layers"))
-    //     .def_readwrite("adsorption_potential", &MixturePTA::potential)
-    //     .def_readwrite("equation_of_state", &MixturePTA::equation_of_state)
-    //     .def_readwrite("isotherm_type", &MixturePTA::isotherm_type)
-    //     .def_readwrite("number_of_layers", &MixturePTA::num_of_layers)
-    //     .def("GetLoading", &MixturePTA::GetLoading,
-    //          "Get multiple-component loadings",
-    //          py::arg("composition"),
-    //          py::arg("pressure"),
-    //          py::arg("temperature"),
-    //          py::arg("adsorption_potential_parameters"),
-    //          py::arg("fluid_parameters"));
+    py::class_<MixturePTA>(m, "MixturePTA")
+        .def(py::init<std::string &, std::string &, std::string &, std::size_t &>(),
+             py::arg("adsorption_potential"),
+             py::arg("equation_of_state"),
+             py::arg("isotherm_type"),
+             py::arg("number_of_layers"))
+        .def_readwrite("adsorption_potential", &MixturePTA::potential)
+        .def_readwrite("equation_of_state", &MixturePTA::equation_of_state)
+        .def_readwrite("isotherm_type", &MixturePTA::isotherm_type)
+        .def_readwrite("number_of_layers", &MixturePTA::num_of_layers)
+        .def("GetLoading", &MixturePTA::GetLoading,
+             "Get multiple-component loadings",
+             py::arg("composition"),
+             py::arg("pressure"),
+             py::arg("temperature"),
+             py::arg("adsorption_potential_parameters"),
+             py::arg("fluid_parameters"));
+
+#ifdef VERSION_INFO
+    m.attr("__version__") = VERSION_INFO;
+#else
+    m.attr("__version__") = "dev";
+#endif
 }

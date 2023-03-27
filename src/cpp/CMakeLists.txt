@@ -16,8 +16,6 @@ enable_testing()
 # Src
 AUX_SOURCE_DIRECTORY(src SRC_FILES)
 
-# Headers
-set(PROJECT_SOURCE_DIR src)
 
 add_subdirectory(googletest)
 add_subdirectory(tests)

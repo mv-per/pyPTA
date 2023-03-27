@@ -32,6 +32,8 @@ public:
 	std::size_t NumberOfLayers;
 	std::string EquationOfState;
 	std::string IsothermType;
+
+	~PurePTA() {}
 	/**
 	 * PurePTA
 	 *

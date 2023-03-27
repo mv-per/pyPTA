@@ -117,6 +117,4 @@
     "**/.vscode",
     "**/.vscode/**"
   ],
-  "C_Cpp.errorSquiggles": "disabled",
-  "cmake.sourceDirectory": "${workspaceFolder}/src/pyPTA/cpp"
 }
