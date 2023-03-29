@@ -40,12 +40,12 @@ std::function<mix_eos(std::vector<double>, double, double)> MixturePTA::get_equa
 
 std::function<std::vector<double>(std::vector<double>, double, double, std::vector<std::vector<double>>, std::vector<Fluid>)> MixturePTA::GetLoadingFunction(void)
 {
-	if (this->potential == "DRA")
+	if (this->potential == DRA_POTENTIAL)
 	{
 		return [this](std::vector<double> composition, double P, double T, std::vector<std::vector<double>> params, std::vector<Fluid> fluid_params)
 		{ return this->get_mixture_dr_loading(composition, P, T, params, fluid_params); };
 	}
-	else if (this->potential == "STEELE" || this->potential == "LEE")
+	else if (this->potential == STEELE_POTENTIAL || this->potential == LEE_POTENTIAL)
 	{
 		return [this](std::vector<double> composition, double P, double T, std::vector<std::vector<double>> params, std::vector<Fluid> fluid_params)
 		{ return this->get_mixture_lj_loading(composition, P, T, params, fluid_params); };
@@ -60,21 +60,21 @@ std::function<std::vector<double>(std::vector<double>, double, double, std::vect
 std::function<double(std::size_t, double)>
 MixturePTA::GetAdsorptionPotentialInvoker(std::vector<std::vector<double>> potential_params, std::vector<Fluid> fluids)
 {
-	if (this->potential == "DRA")
+	if (this->potential == DRA_POTENTIAL)
 	{
 		return [=](std::size_t i, double z)
 		{
 			return DRA(z, potential_params[i][0], potential_params[i][1], potential_params[i][2]);
 		};
 	}
-	else if (this->potential == "STELLE")
+	else if (this->potential == STEELE_POTENTIAL)
 	{
 		return [=](std::size_t i, double z)
 		{
 			return STEELE(z, potential_params[i][0], fluids[i].LennardJonnesDiameter, this->adsorbent);
 		};
 	}
-	else if (this->potential == "LEE")
+	else if (this->potential == LEE_POTENTIAL)
 	{
 		return [=](std::size_t i, double z)
 		{

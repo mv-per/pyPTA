@@ -30,7 +30,7 @@ public:
 	/**
 	 * MixturePTA
 	 *
-	 * @param potential_ Name of the potential to be used in the calculations
+	 * @param potential_ potential to be used in the calculations
 	 * @param eos Name of the Equation of State to be used in the calculations
 	 * @param isotherm_type_ Type of the isotherm to be used in calculations (excess | absolute).
 	 * @param num_of_layers_ Number of layers from the solid to Gibbs phase.

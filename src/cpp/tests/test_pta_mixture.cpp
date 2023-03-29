@@ -2,11 +2,13 @@
 #include <gtest/gtest.h>
 #include <vector>
 #include <cassert>
+
 #include "../src/pta_mixture.h"
 
 TEST(test_pta_mixture, testMixtureCalculation)
 {
-    auto pta_model = MixturePTA("DRA", "pr77", "excess", 155);
+    std::string potential = DRA_POTENTIAL;
+    auto pta_model = MixturePTA(potential, "pr77", "excess", 155);
 
     Fluid co2;
     co2.CriticalPressure = 73.773e5;
@@ -35,7 +37,8 @@ TEST(test_pta_mixture, testMixtureCalculation)
 
 TEST(test_pta_mixture, testMixtureCalculationThreeComponents)
 {
-    auto pta_model = MixturePTA("DRA", "pr77", "excess", 155);
+    std::string potential = DRA_POTENTIAL;
+    auto pta_model = MixturePTA(potential, "pr77", "excess", 155);
 
     Fluid co2;
     co2.CriticalPressure = 73.773e5;

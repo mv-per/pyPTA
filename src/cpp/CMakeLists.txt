@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.26.0)
+cmake_minimum_required(VERSION 3.16)
 
 set(This cPTA)
 
@@ -20,8 +20,13 @@ AUX_SOURCE_DIRECTORY(src SRC_FILES)
 add_subdirectory(googletest)
 add_subdirectory(tests)
 
-file (GLOB Sources "src/**/*.cpp")
-file (GLOB Headers "src/**/*.h")
+file (GLOB Sources "src/*.cpp")
+file (GLOB OptimizationSources "src/optimization_algorithms/brent.cpp")
+file (GLOB EoSSources "src/equations_of_state/*.cpp")
+
+file (GLOB OptimizationHeaders "src/optimization_algorithms/brent.h")
+file (GLOB EoSHeaders "src/equations_of_state/*.h")
+file (GLOB Headers "src/*.h")
 
 
-add_library(${This} SHARED ${Sources} ${Headers})
+add_library(${This} SHARED ${Sources} ${OptimizationSources} ${EoSSources} ${Headers} ${OptimizationHeaders} ${EoSHeaders})

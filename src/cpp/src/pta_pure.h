@@ -79,6 +79,8 @@ public:
 	void SetAdsorbent(Adsorbent properties);
 
 private:
+	bool AdsorbentConfigured = false;
+
 	call_mono_get_load GetLoadingFunction();
 
 	std::function<mono_eos(double, double)> GetEquationOfStateInvoker(Fluid fluid_);

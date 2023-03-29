@@ -63,11 +63,11 @@ double GetCalculatedAdsorbedDensity(double adsorbed_density, double bulk_density
 
 double GetAdsorptionPotentialEnergy(double eps, double T, std::string potential)
 {
-    if (potential == "DRA")
+    if (potential == DRA_POTENTIAL)
     {
         return std::exp(eps / (8.314 * T));
     }
-    else if (potential == "STELLE" || potential == "LEE")
+    else if (potential == STEELE_POTENTIAL || potential == LEE_POTENTIAL)
     {
         return std::exp(-eps / (1.38064852e-23 * T));
     }

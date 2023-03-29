@@ -1,0 +1,10 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"cmake.cmakePath": "/home/mvper/miniconda3/envs/cPTA/bin/cmake"
+	}
+}

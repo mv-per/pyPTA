@@ -52,4 +52,8 @@ public:
     ~Adsorbent() {}
 };
 
+const DRA_POTENTIAL = "DRA";
+const LEE_POTENTIAL = "LEE";
+const STEELE_POTENTIAL = "STEELE";
+
 #endif

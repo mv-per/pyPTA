@@ -1,4 +1,8 @@
 {
+  "python.testing.pytestArgs": [
+    "../tests"
+  ],
+  "python.testing.nosetestsEnabled": false,
   "python.linting.enabled": true,
   "autoDocstring.docstringFormat": "sphinx",
   "editor.codeActionsOnSave": {

@@ -5,7 +5,8 @@
 TEST(test_pta_pure, TestSinglePTALoading)
 {
 
-    auto pta_model = PurePTA("DRA", "pr77", "excess", 100);
+    std::string potential = DRA_POTENTIAL;
+    auto pta_model = PurePTA(potential, "pr77", "excess", 100);
 
     Fluid co2;
     co2.CriticalPressure = 73.773e5;
@@ -21,8 +22,8 @@ TEST(test_pta_pure, TestSinglePTALoading)
 
 TEST(test_pta_pure, TestSinglePTALoading2)
 {
-
-    auto pta_model = PurePTA("DRA", "pr77", "excess", 100);
+    std::string potential = DRA_POTENTIAL;
+    auto pta_model = PurePTA(potential, "pr77", "excess", 100);
 
     Fluid co2;
     co2.CriticalPressure = 73.773e5;
@@ -38,8 +39,8 @@ TEST(test_pta_pure, TestSinglePTALoading2)
 
 TEST(test_pta_pure, TestGetMultiplePurePTA)
 {
-
-    PurePTA pta_model = PurePTA("DRA", "pr77", "excess", 155);
+    std::string potential = DRA_POTENTIAL;
+    PurePTA pta_model = PurePTA(potential, "pr77", "excess", 155);
 
     Fluid co2;
     co2.CriticalPressure = 73.773e5;
@@ -67,7 +68,8 @@ TEST(test_pta_pure, TestGetMultiplePurePTA)
 
 TEST(test_pta_pure, TestGetMultiplePureDeviationDRA)
 {
-    PurePTA pta_model = PurePTA("DRA", "pr77", "excess", 155);
+    std::string potential = DRA_POTENTIAL;
+    PurePTA pta_model = PurePTA(potential, "pr77", "excess", 155);
 
     Fluid co2;
     co2.CriticalPressure = 73.773e5;
@@ -90,7 +92,8 @@ TEST(test_pta_pure, TestGetMultiplePureDeviationDRA)
 
 TEST(test_pta_pure, TestGetMultiplePureDeviationLEE)
 {
-    PurePTA pta_model = PurePTA("LEE", "pr77", "excess", 155);
+    std::string potential = LEE_POTENTIAL;
+    PurePTA pta_model = PurePTA(potential, "pr77", "excess", 155);
 
     Adsorbent Z01x = Adsorbent("Z01x", 3.35, 0.382);
 
@@ -117,25 +120,26 @@ TEST(test_pta_pure, TestGetMultiplePureDeviationLEE)
 
 TEST(test_pta_pure, TestGetMultiplePureDeviationSTEELE)
 {
-    PurePTA pta_model = PurePTA("STEELE", "pr77", "excess", 155);
+    std::string potential = STEELE_POTENTIAL;
+    PurePTA pta_model = PurePTA(potential, "pr77", "excess", 155);
 
-    Adsorbent Z01x = Adsorbent("Z01x", 3.35, 0.382);
+    Adsorbent adsorbent = Adsorbent("Z01x", 3.35, 0.382);
 
-    pta_model.SetAdsorbent(Z01x);
+    pta_model.SetAdsorbent(adsorbent);
 
-    Fluid co2;
-    co2.CriticalPressure = 73.773e5;
-    co2.CriticalTemperature = 304.13;
-    co2.AccentricFactor = 0.22394;
-    co2.LennardJonnesDiameter = 3.941;
+    Fluid fluid;
+    fluid.CriticalPressure = 73.773e5;
+    fluid.CriticalTemperature = 304.13;
+    fluid.AccentricFactor = 0.22394;
+    fluid.LennardJonnesDiameter = 3.941;
 
-    std::vector<double> CO2LEEParams = {109.32, 13.34, 611.88}; // eps/K, L, A
+    std::vector<double> params = {109.32, 13.34, 611.88}; // eps/K, L, A
 
     std::vector<double> pressures = {10000.0, 37000.0, 52000.0, 77000.0, 101000.0, 504000.0, 966000.0, 1989000.0, 2692000.0, 3930000.0, 4912000.0, 5753000.0};
 
     std::vector<double> experimental = {0.0834321, 0.438571, 0.623465, 0.909272, 1.15948, 3.61979, 4.93091, 6.24615, 6.6598, 6.9871, 7.0454, 7.0007};
 
-    double CalculatedDeviation = pta_model.GetDeviationRange("absolute", experimental, pressures, 318.2, CO2LEEParams, co2);
+    double CalculatedDeviation = pta_model.GetDeviationRange("absolute", experimental, pressures, 318.2, params, fluid);
 
     ASSERT_EQ(pressures.size(), experimental.size());
 

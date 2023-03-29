@@ -1,4 +1,5 @@
 #include "pta_pure.h"
+#include <iostream>
 
 PurePTA::PurePTA(std::string potential, std::string equation_of_state, std::string isotherm_type, std::size_t num_of_layers)
 {
@@ -87,19 +88,25 @@ double PurePTA::GetDeviationRange(std::string deviation_type,
 void PurePTA::SetAdsorbent(Adsorbent adsorbent)
 {
     this->adsorbent = adsorbent;
+    this->AdsorbentConfigured=true;
 }
 
 call_mono_get_load PurePTA::GetLoadingFunction()
 {
-    if (this->Potential == "DRA")
+    
+    if (this->Potential == DRA_POTENTIAL)
     {
         return [this](double P, double T, std::vector<double> params, call_mono_eos eos, call_potential get_potential)
         { return this->GetDRAAdsorbedAmout(P, T, params, eos, get_potential); };
-    }
-    else if (this->Potential == "STEELE" || this->Potential == "LEE")
+    }    
+    else if (this->Potential == STEELE_POTENTIAL || this->Potential == LEE_POTENTIAL)
     {
         return [this](double P, double T, std::vector<double> params, call_mono_eos eos, call_potential get_potential)
-        { return this->GetLJAdsorbedAmout(P, T, params, eos, get_potential); };
+        { 
+            if (!this->AdsorbentConfigured) {
+                throw std::invalid_argument("Adsorbent properties are needed for LJ-based potentials and is not defined.\nUse `set_adsorbent(adsorbent)` to configure.");
+            }
+            return this->GetLJAdsorbedAmout(P, T, params, eos, get_potential); };
     }
     else
     {
@@ -126,21 +133,21 @@ std::function<mono_eos(double, double)> PurePTA::GetEquationOfStateInvoker(Fluid
 
 std::function<double(double)> PurePTA::GetAdsorptionPotentialInvoker(std::vector<double> potential_params, Fluid fluid, Adsorbent solid_properties)
 {
-    if (this->Potential == "DRA")
+    if (this->Potential == DRA_POTENTIAL)
     {
         return [=](double z)
         {
             return DRA(z, potential_params[0], potential_params[1], potential_params[2]);
         };
     }
-    else if (this->Potential == "STEELE")
+    else if (this->Potential == STEELE_POTENTIAL)
     {
         return [=](double z)
         {
             return STEELE(z, potential_params[0], fluid.LennardJonnesDiameter, solid_properties);
         };
     }
-    else if (this->Potential == "LEE")
+    else if (this->Potential == LEE_POTENTIAL)
     {
         return [=](double z)
         {

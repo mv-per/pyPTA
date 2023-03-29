@@ -74,6 +74,7 @@ PYBIND11_MODULE(pyPTA, m)
         .def_readwrite("EquationOfState", &PurePTA::EquationOfState)
         .def_readwrite("IsothermType", &PurePTA::IsothermType)
         .def_readwrite("NumberOfLayers", &PurePTA::NumberOfLayers)
+        .def("set_adsorbent", &PurePTA::SetAdsorbent, py::arg("Adsorbent"))
         .def("get_loading", &PurePTA::GetLoading,
             "Get single-component loading",
             py::arg("pressure"),
@@ -112,6 +113,12 @@ PYBIND11_MODULE(pyPTA, m)
              py::arg("temperature"),
              py::arg("adsorption_potential_parameters"),
              py::arg("fluid_parameters"));
+
+
+    m.attr("DRA_POTENTIAL") = py::str_([](){ return DRA_POTENTIAL; });
+    m.attr("STEELE_POTENTIAL") = py::str_([](){ return STEELE_POTENTIAL; });
+    m.attr("LEE_POTENTIAL") = py::str_([](){ return LEE_POTENTIAL; });
+
 
 #ifdef VERSION_INFO
     m.attr("__version__") = "0.0.1";
