@@ -1,0 +1,23 @@
+{% set version = "0.0.1" %}
+
+package:
+  name: pypta
+  version: {{ version }}
+
+source:
+  path: ./
+
+build:
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+
+requirements:
+  build:
+    - pip
+    - python=3.10
+    - pybind11
+    - setuptools
+    - wheel
+    - ninja
+    - cmake>=3.12
+  run:
+    - python>=3.10
