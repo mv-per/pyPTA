@@ -115,9 +115,9 @@ PYBIND11_MODULE(pyPTA, m)
              py::arg("fluid_parameters"));
 
 
-    m.attr("DRA_POTENTIAL") = py::str_([](){ return DRA_POTENTIAL; });
-    m.attr("STEELE_POTENTIAL") = py::str_([](){ return STEELE_POTENTIAL; });
-    m.attr("LEE_POTENTIAL") = py::str_([](){ return LEE_POTENTIAL; });
+    m.attr("DRA_POTENTIAL") = py::str(DRA_POTENTIAL);
+    m.attr("STEELE_POTENTIAL") = py::str(STEELE_POTENTIAL);
+    m.attr("LEE_POTENTIAL") = py::str(LEE_POTENTIAL);
 
 
 #ifdef VERSION_INFO

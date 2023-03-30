@@ -52,8 +52,8 @@ public:
     ~Adsorbent() {}
 };
 
-const DRA_POTENTIAL = "DRA";
-const LEE_POTENTIAL = "LEE";
-const STEELE_POTENTIAL = "STEELE";
+const std::string DRA_POTENTIAL = "DRA";
+const std::string LEE_POTENTIAL = "LEE";
+const std::string STEELE_POTENTIAL = "STEELE";
 
 #endif

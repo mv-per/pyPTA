@@ -1,4 +1,4 @@
-from pyPTA import PurePTA, Fluid, std::string, Adsorbent
+from pyPTA import PurePTA, Fluid, Adsorbent, DRA_POTENTIAL, STEELE_POTENTIAL, LEE_POTENTIAL
 import pytest
 
 @pytest.fixture
@@ -6,7 +6,7 @@ def setup_fluid() -> Fluid:
     return Fluid('CO2', 73.773e5, 304.13, 0.22394)
 
 @pytest.mark.parametrize(
-    'adsorption_potential', (std::string.DRA, std::string.LEE, std::string.STEELE)
+    'adsorption_potential', (DRA_POTENTIAL, LEE_POTENTIAL, STEELE_POTENTIAL)
 )
 def test_create_pure_pta(adsorption_potential:str)->None:
 
@@ -17,9 +17,9 @@ def test_create_pure_pta(adsorption_potential:str)->None:
 @pytest.mark.parametrize(
     'adsorption_potential, parameters, expected_calculated_loading',
     [
-        (std::string.DRA, [7880.19, 0.29, 2.], 5.7589324),
-        (std::string.LEE, [125.63, 12.26, 765.70], 5.7589324),
-        (std::string.STEELE, [109.32, 13.34, 611.88], 5.7589324),
+        (DRA_POTENTIAL, [7880.19, 0.29, 2.], 5.7589324),
+        (LEE_POTENTIAL, [125.63, 12.26, 765.70], 0.2207866),
+        (STEELE_POTENTIAL, [109.32, 13.34, 611.88], 0.06526460),
     ]
 )
 def test_pure_pta_calculate_loading(setup_fluid:Fluid, adsorption_potential:str, parameters:list[float], expected_calculated_loading:float)->None:
@@ -27,16 +27,34 @@ def test_pure_pta_calculate_loading(setup_fluid:Fluid, adsorption_potential:str,
     pure_pta = PurePTA(adsorption_potential, 'pr77', 'excess', 555)
 
     adsorbent = Adsorbent("Z01x", 3.35, 0.382)
-    # pure_pta.set_adsorbent(adsorbent)
+    pure_pta.set_adsorbent(adsorbent)
 
     loading = pure_pta.get_loading(1e6, 305, parameters, setup_fluid)
 
     assert loading == pytest.approx(expected_calculated_loading)
 
+@pytest.mark.parametrize(
+    'adsorption_potential, parameters',
+    [
+        (LEE_POTENTIAL, [125.63, 12.26, 765.70]),
+        (STEELE_POTENTIAL, [109.32, 13.34, 611.88]),
+    ]
+)
+def test_pure_pta_calculate_loading_error_without_adsorbent(setup_fluid:Fluid, adsorption_potential:str, parameters:list[float])->None:
+
+    pure_pta = PurePTA(adsorption_potential, 'pr77', 'excess', 555)
+
+    adsorbent = Adsorbent("Z01x", 3.35, 0.382)
+
+    with pytest.raises(Exception) as exception:
+        pure_pta.get_loading(1e6, 305, parameters, setup_fluid)
+
+    print(exception)
+
 def test_pure_pta_calculate_loadings(setup_fluid:Fluid)->None:
     import numpy as np
 
-    pure_pta = PurePTA(std::string.DRA, 'pr77', 'excess', 555)
+    pure_pta = PurePTA(DRA_POTENTIAL, 'pr77', 'excess', 555)
 
     DRA_PARAMETERS = [7880.19, 0.29, 2.]
 
