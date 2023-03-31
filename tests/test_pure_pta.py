@@ -74,3 +74,37 @@ def test_pure_pta_calculate_loadings(setup_fluid:Fluid)->None:
             4.603105939555204,
             4.11310650481496,
             3.8378197855658422]
+
+@pytest.mark.parametrize(
+    'type_of_deviation, expected',
+    [
+        ('absolute_relative', 0.0422067131765064),
+        ('absolute', 0.023953988843656404),
+        ('relative', -0.011296498267532325),
+    ]
+)
+def test_pure_pta_calculate_deviation_of_range(setup_fluid:Fluid, type_of_deviation:str, expected:float)->None:
+    import numpy as np
+
+    pure_pta = PurePTA(DRA_POTENTIAL, 'pr77', 'excess', 555)
+
+    DRA_PARAMETERS = [7880.19, 0.29, 2.]
+
+    pressures = np.arange(1e6, 11e6, 1e6)
+
+    experimental_loadings = [5.758932400768459,
+            6.895706537068475,
+            7.304286537152829,
+            7.42048187387874,
+            7.368745932028131,
+            7.173182017172223,
+            6.720995771700607,
+            4.603105939555204,
+            4.11310650481496,
+            3.8378197855658422]
+
+    experimental_loadings = [round(loading, 2) for loading in experimental_loadings]
+
+    deviation = pure_pta.get_deviation_range(type_of_deviation, experimental_loadings, pressures, 305, DRA_PARAMETERS, setup_fluid)
+
+    assert deviation == expected
