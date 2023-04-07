@@ -18,8 +18,8 @@ def test_create_pure_pta(adsorption_potential:str)->None:
     'adsorption_potential, parameters, expected_calculated_loading',
     [
         (DRA_POTENTIAL, [7880.19, 0.29, 2.], 5.7589324),
-        (LEE_POTENTIAL, [125.63, 12.26, 765.70], 0.2207866),
-        (STEELE_POTENTIAL, [109.32, 13.34, 611.88], 0.06526460),
+        (LEE_POTENTIAL, [125.63, 12.26, 765.70], 6.113060),
+        (STEELE_POTENTIAL, [109.32, 13.34, 611.88], 7.50000),
     ]
 )
 def test_pure_pta_calculate_loading(setup_fluid:Fluid, adsorption_potential:str, parameters:list[float], expected_calculated_loading:float)->None:
@@ -28,6 +28,7 @@ def test_pure_pta_calculate_loading(setup_fluid:Fluid, adsorption_potential:str,
 
     adsorbent = Adsorbent("Z01x", 3.35, 0.382)
     pure_pta.set_adsorbent(adsorbent)
+    setup_fluid.lennard_jonnes_diameter = 3.941
 
     loading = pure_pta.get_loading(1e6, 305, parameters, setup_fluid)
 
@@ -44,12 +45,12 @@ def test_pure_pta_calculate_loading_error_without_adsorbent(setup_fluid:Fluid, a
 
     pure_pta = PurePTA(adsorption_potential, 'pr77', 'excess', 555)
 
-    adsorbent = Adsorbent("Z01x", 3.35, 0.382)
-
-    with pytest.raises(Exception) as exception:
+    expected_error_message = """Adsorbent properties are needed for LJ-based potentials and is not defined."""
+    with pytest.raises(ValueError) as e:
         pure_pta.get_loading(1e6, 305, parameters, setup_fluid)
 
-    print(exception)
+    assert expected_error_message in str(e)
+
 
 def test_pure_pta_calculate_loadings(setup_fluid:Fluid)->None:
     import numpy as np
