@@ -1,5 +1,6 @@
 
 #include "brent.h"
+#include <iostream>
 
 /**
  * Returns the first value in the same unit as de second one
@@ -138,20 +139,5 @@ complete_step:
     goto begin_30;
 
 done:
-    double zeroin = b;
-    return zeroin;
-}
-
-template <class T>
-T removenegative(T oldArray)
-{
-    T array;
-    for (size_t i = 0; i < oldArray.size(); i++)
-    {
-        if (oldArray[i] > 0.0)
-        {
-            array[i] = oldArray[i];
-        }
-    }
-    return array;
+    return b;
 }

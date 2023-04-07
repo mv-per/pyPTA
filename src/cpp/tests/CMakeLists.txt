@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-set(This pyPTATests)
+set(This cPTATests)
 
 set(Sources
     test_pta_mixture.cpp
@@ -12,7 +12,7 @@ set(Sources
 add_executable(${This} ${Sources})
 target_link_libraries(${This} PUBLIC
     gtest_main
-    pyPTA
+    cPTA
 )
 
 add_test(

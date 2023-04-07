@@ -22,7 +22,4 @@ double sign(double value1, double value2);
  */
 double brent_zeroin(std::function<double(double)> fun, double x, double tol);
 
-template <class T>
-T removenegative(T oldArray);
-
 #endif

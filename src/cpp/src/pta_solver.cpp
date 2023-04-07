@@ -1,11 +1,15 @@
 #include "pta_solver.h"
 
-
-
-
 PTASolver::PTASolver(double bulk_fugacity, double temperature, call_mono_eos eos)
 {
     this->EquationOfState = eos;
+    this->BulkFugacity = bulk_fugacity;
+    this->Temperature = temperature;
+}
+
+PTASolver::PTASolver(double bulk_fugacity, double temperature, call_mix_eos eos)
+{
+    this->MixEquationOfState = eos;
     this->BulkFugacity = bulk_fugacity;
     this->Temperature = temperature;
 }
@@ -30,5 +34,4 @@ double PTASolver::findOptimizedPressure(double InitialPressureEstimate, double f
     };
 
     return brent_zeroin(equilibrium, InitialPressureEstimate, this->DEFAULT_TOL);
-
 }

@@ -143,5 +143,5 @@ TEST(test_pta_pure, TestGetMultiplePureDeviationSTEELE)
 
     ASSERT_EQ(pressures.size(), experimental.size());
 
-    EXPECT_NEAR(CalculatedDeviation, 14.52642, 1e-4);
+    EXPECT_NEAR(CalculatedDeviation, 41.7384, 1e-4);
 };

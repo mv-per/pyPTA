@@ -88,17 +88,17 @@ double PurePTA::GetDeviationRange(std::string deviation_type,
 void PurePTA::SetAdsorbent(Adsorbent adsorbent)
 {
     this->adsorbent = adsorbent;
-    this->AdsorbentConfigured=true;
+    this->AdsorbentConfigured = true;
 }
 
 call_mono_get_load PurePTA::GetLoadingFunction()
 {
-    
+
     if (this->Potential == DRA_POTENTIAL)
     {
         return [this](double P, double T, std::vector<double> params, call_mono_eos eos, call_potential get_potential)
         { return this->GetDRAAdsorbedAmout(P, T, params, eos, get_potential); };
-    }    
+    }
     else if (this->Potential == STEELE_POTENTIAL || this->Potential == LEE_POTENTIAL)
     {
         return [this](double P, double T, std::vector<double> params, call_mono_eos eos, call_potential get_potential)
@@ -204,6 +204,10 @@ double PurePTA::GetLJAdsorbedAmout(
 
     // Initial estimates for the adsorbed region
     Pz = BulkPressure;
+    if (!this->fluid.LennardJonnesDiameter)
+    {
+        throw std::invalid_argument("Missing the Lennard-Jonnes diameter for the fluid " + this->fluid.Name);
+    }
     double minimal_space = 0.7 * this->fluid.LennardJonnesDiameter;
 
     std::vector<double>
