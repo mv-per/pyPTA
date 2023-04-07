@@ -4,8 +4,30 @@ requires = [
     "wheel",
     "ninja",
     "cmake>=3.12",
+    "pybind11",
+
 ]
 build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "pyPTA"
+version = "0.0.1"
+authors = [
+  { name="Marcus Pereira", email="mav.pereira@outlook.com" },
+]
+description = "A python package to calculate PTA mono- and muilticomponent data."
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/mv-per/pyPTA"
+"Bug Tracker" = "https://github.com/mv-per/pyPTA/issues"
 
 [tool.mypy]
 files = "setup.py"
@@ -47,3 +69,5 @@ extend-ignore = [
   "E501",   # Line too long
 ]
 target-version = "py37"
+
+

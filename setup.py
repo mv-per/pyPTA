@@ -4,7 +4,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from setuptools import Extension, setup
+from setuptools import Extension, setup, find_packages
 from setuptools.command.build_ext import build_ext
 
 # Convert distutils Windows platform specifiers to CMake -A arguments
@@ -136,7 +136,7 @@ kwargs = dict(
     description="A python package to calculate PTA mono- and muilticomponent data.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    ext_modules=[CMakeExtension("cmake_example")],
+    ext_modules=[CMakeExtension("pyPTA")],
     cmdclass={"build_ext": CMakeBuild},
     url="https://github.com/mv-per/pyPTA",
     project_urls={
@@ -148,7 +148,7 @@ kwargs = dict(
         "Operating System :: OS Independent",
     ],
     zip_safe=False,
-    package_dir={"": "src"},
+    packages=find_packages(where='src/cpp/src')
 )
 
 
