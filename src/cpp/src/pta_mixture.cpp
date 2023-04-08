@@ -38,6 +38,13 @@ std::function<mix_eos(std::vector<double>, double, double)> MixturePTA::get_equa
 			return pr77().get_mixture_fluid_properties(composition, P, T, fluids);
 		};
 	}
+	else if (this->equation_of_state == "srk")
+	{
+		return [=](std::vector<double> composition, double P, double T)
+		{
+			return srk().get_mixture_fluid_properties(composition, P, T, fluids);
+		};
+	}
 	else
 	{
 		throw std::invalid_argument("Equation of State not found/defined.");
@@ -141,10 +148,12 @@ MixturePTA::get_mixture_lj_loading(std::vector<double> bulk_composition, double 
 		{
 			eps = get_potential(j, z[j][i], fluids[j]) + get_potential(j, potential_parameters[j][1] - z[j][i], fluids[j]);
 			f_eps[j] = GetAdsorptionPotentialEnergy(eps, Temperature, this->potential);
+
+			// TODO: study the proper rate with parameter L and the adsorbent sizes
 		}
 
 		// Find pressure and composition of equilibrium
-		struct Equilibrium Props = this->find_equilibrium_properties(Pz * 1.1, adsorbed_composition, bulk.fug, f_eps, Temperature, eos);
+		struct Equilibrium Props = this->find_equilibrium_properties(Pz, adsorbed_composition, bulk.fug, f_eps, Temperature, eos);
 		Pz = Props.Pz;
 		adsorbed_composition = Props.x;
 
@@ -231,7 +240,7 @@ double MixturePTA::get_equilibrium_difference(double Pz,
 											  call_mix_eos eos)
 {
 
-	if (std::isinf(Pz) == 1 || std::isnan(Pz) == 1 || Pz > 7.0362e+20)
+	if (std::isinf(Pz) == 1 || std::isnan(Pz) == 1)
 	{
 		return 1.0;
 	}

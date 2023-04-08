@@ -3,6 +3,8 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
+#include <sstream>
 
 /// Gas contsant, [m3 Pa /K / mol]
 extern const double R;
@@ -20,11 +22,13 @@ struct mix_eos
 	double Z;
 };
 
-std::vector<double> find_z(double A, double B);
+std::vector<double> find_z(double a0, double a1, double a2);
 double gx(double X, double a0, double a1, double a2);
 double dgx(double X, double a1, double a2);
 double d2gx(double X, double a2);
 double minvalue(double num1, double num2, double num3);
 double maxvalue(double num1, double num2, double num3);
+
+void CheckValidPressure(double P);
 
 #endif

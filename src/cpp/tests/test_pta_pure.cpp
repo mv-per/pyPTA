@@ -145,3 +145,32 @@ TEST(test_pta_pure, TestGetMultiplePureDeviationSTEELE)
 
     EXPECT_NEAR(CalculatedDeviation, 41.7384, 1e-4);
 };
+
+// equations of state
+
+TEST(test_pta_pure, TestGetMultiplePureDeviationDRAWithSRK)
+{
+    std::string potential = DRA_POTENTIAL;
+    PurePTA pta_model = PurePTA(potential, "srk", "excess", 155);
+
+    Fluid co2;
+    co2.CriticalPressure = 73.773e5;
+    co2.CriticalTemperature = 304.13;
+    co2.AccentricFactor = 0.22394;
+    co2.LennardJonnesDiameter = 3.941;
+
+    std::vector<double> CO2DRAParams = {7880.19, 0.29, 2.};
+
+    std::vector<double> pressures = {10000.0, 37000.0, 52000.0, 77000.0, 101000.0, 504000.0, 966000.0, 1989000.0, 2692000.0, 3930000.0, 4912000.0, 5753000.0};
+
+    std::vector<double> expected = {0.076485, 0.38631, 0.546913, 0.795782, 1.013569, 3.157997, 4.30760, 5.46686, 5.83229, 6.119404, 6.16664, 6.12293};
+
+    std::vector<double> calculated = pta_model.GetLoadings(pressures, 318.2, CO2DRAParams, co2);
+
+    ASSERT_EQ(pressures.size(), calculated.size());
+
+    for (std::size_t i = 0; i < pressures.size(); i++)
+    {
+        EXPECT_NEAR(calculated[i], expected[i], 1e-4);
+    }
+};

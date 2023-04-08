@@ -1,7 +1,6 @@
 
 
-#include "pr77.h"
-
+#include "srk.h"
 /**
  * Original Peng-Robinson EOS
  *
@@ -20,13 +19,13 @@
  * @param w Acentric Factor of the fluid.
  * @return A Tuple containin a and b.
  */
-std::tuple<double, double> pr77::get_critical_properties(double T, double Pc, double Tc, double w)
+std::tuple<double, double> srk::get_critical_properties(double T, double Pc, double Tc, double w)
 {
     double Tr = T / Tc;
-    double kappa = 0.37464 + 1.54226 * w - 0.26992 * w * w;
-    double alpha = std::pow(1 + kappa * (1 - sqrt(Tr)), 2.0);
-    double a = 0.457235 * R * R * Tc * Tc * alpha / Pc;
-    double b = 0.077796 * R * Tc / Pc;
+    double kappa = 0.48508 + 1.55171 * w - 0.15613 * w * w;
+    double alpha = std::pow(1 + kappa * (1.0 - sqrt(Tr)), 2.0);
+    double a = 0.42748 * R * R * Tc * Tc * alpha / Pc;
+    double b = 0.08664 * R * Tc / Pc;
     return std::make_tuple(a, b);
 }
 
@@ -40,7 +39,7 @@ std::tuple<double, double> pr77::get_critical_properties(double T, double Pc, do
  * @param min_or_max Flag to check the minimal (= 0) or maximum (=1) compressibility factor of the list
  * @return A Tuple containing the gibbs energy, compressibility factor, fugacity coefficient and fugacity.
  */
-std::tuple<double, double, double, double> pr77::get_gibbs_energy(double P, std::vector<double> Z, double A, double B, int min_or_max)
+std::tuple<double, double, double, double> srk::get_gibbs_energy(double P, std::vector<double> Z, double A, double B, int min_or_max)
 {
     double phi, fug;
     if (min_or_max == 0)
@@ -52,7 +51,7 @@ std::tuple<double, double, double, double> pr77::get_gibbs_energy(double P, std:
     {
         Z_ = maxvalue(Z[0], Z[1], Z[2]);
     }
-    phi = exp((Z_ - 1.0) - log(Z_ - B) - A / B / 2.8284 * log((Z_ + 2.414 * B) / (Z_ - 0.414 * B)));
+    phi = exp((Z_ - 1.0) - log(Z_ - B) - A / B * log((Z_ + B) / Z_));
     fug = phi * P;
     return std::make_tuple(log(fug), Z_, phi, fug);
 }
@@ -65,7 +64,7 @@ std::tuple<double, double, double, double> pr77::get_gibbs_energy(double P, std:
  * @param fluid fluid properties.
  * @return Struct containing the fluid properties.
  */
-struct mono_eos pr77::get_mono_fluid_properties(double P, double T, Fluid fluid)
+struct mono_eos srk::get_mono_fluid_properties(double P, double T, Fluid fluid)
 {
     CheckValidPressure(P);
 
@@ -78,9 +77,9 @@ struct mono_eos pr77::get_mono_fluid_properties(double P, double T, Fluid fluid)
     double B = b * P / R / T;
 
     // cubic equation parameters
-    double a2 = B - 1.0;
-    double a1 = A - 3.0 * B * B - 2.0 * B;
-    double a0 = -A * B + B * B + B * B * B;
+    double a2 = -1.0;
+    double a1 = A - B - B * B;
+    double a0 = -A * B;
 
     std::vector<double> Z = find_z(a0, a1, a2);
 
@@ -101,6 +100,7 @@ struct mono_eos pr77::get_mono_fluid_properties(double P, double T, Fluid fluid)
         phi = phi_max;
         fug = fug_max;
     }
+
     double vol = Zvalue * R * T / P;
     double dens = 1.0 / vol;
 
@@ -117,8 +117,9 @@ struct mono_eos pr77::get_mono_fluid_properties(double P, double T, Fluid fluid)
  * @param fluids List fluids on the mixture.
  * @return Struct containing the fluid properties
  */
-struct mix_eos pr77::get_mixture_fluid_properties(std::vector<double> x, double P, double T, std::vector<Fluid> fluids)
+struct mix_eos srk::get_mixture_fluid_properties(std::vector<double> x, double P, double T, std::vector<Fluid> fluids)
 {
+
     CheckValidPressure(P);
 
     ncomp = x.size();
@@ -150,8 +151,8 @@ struct mix_eos pr77::get_mixture_fluid_properties(std::vector<double> x, double 
     {
         for (j = 0; j < ncomp; j++)
         {
-            aij[i][j] = sqrt(a[i] * a[j]) * (1.0 - cij[i][j]);
-            bij[i][j] = (b[i] + b[j]) / 2.0 * (1.0 + dij[i][j]);
+            aij[i][j] = sqrt(a[i] * a[j]) * (1.0 - cij[i][j]);   // Attractive parameter mixing rule (aij):
+            bij[i][j] = (b[i] + b[j]) / 2.0 * (1.0 + dij[i][j]); // Co-volume parameter mixing rule (bij):
         }
     }
 
@@ -168,9 +169,9 @@ struct mix_eos pr77::get_mixture_fluid_properties(std::vector<double> x, double 
     B = bmix * P / R / T;
 
     // cubic equation parameters
-    double a2 = B - 1.0;
-    double a1 = A - 3.0 * B * B - 2.0 * B;
-    double a0 = -A * B + B * B + B * B * B;
+    double a2 = -1.0;
+    double a1 = A - B - B * B;
+    double a0 = -A * B;
 
     std::vector<double> Z = find_z(a0, a1, a2);
 
@@ -184,8 +185,8 @@ struct mix_eos pr77::get_mixture_fluid_properties(std::vector<double> x, double 
         {
             sumat += x[j] * aij[i][j];
         }
-        phimin[i] = exp(b[i] / bmix * (Zmin - 1.0) - log(Zmin - B) + ((-A) / B / 2.8284) * (2.0 * sumat / amix - b[i] / bmix) * log((Zmin + 2.414 * B) / (Zmin - 0.414 * B)));
-        phimax[i] = exp(b[i] / bmix * (Zmax - 1.0) - log(Zmax - B) + ((-A) / B / 2.8284) * (2.0 * sumat / amix - b[i] / bmix) * log((Zmax + 2.414 * B) / (Zmax - 0.414 * B)));
+        phimin[i] = exp(b[i] / bmix * (Zmin - 1.0) - log(Zmin - B) + ((-A) / B) * (2.0 * sumat / amix - b[i] / bmix) * log((1 + B) / Zmin));
+        phimax[i] = exp(b[i] / bmix * (Zmax - 1.0) - log(Zmax - B) + ((-A) / B) * (2.0 * sumat / amix - b[i] / bmix) * log((1 + B) / Zmax));
         fugmin[i] = phimin[i] * P * x[i];
         fugmax[i] = phimax[i] * P * x[i];
     }

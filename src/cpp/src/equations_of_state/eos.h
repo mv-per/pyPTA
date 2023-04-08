@@ -3,6 +3,7 @@
 #define EOS_CPP
 
 #include "./pr77.h"
+#include "./srk.h"
 #include "./eos_helper.h"
 
 typedef std::function<mono_eos(double, double)> call_mono_eos;

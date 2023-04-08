@@ -125,6 +125,13 @@ std::function<mono_eos(double, double)> PurePTA::GetEquationOfStateInvoker(Fluid
             return pr77().get_mono_fluid_properties(P, T, fluid_);
         };
     }
+    else if (this->EquationOfState == "srk")
+    {
+        return [=](double P, double T)
+        {
+            return srk().get_mono_fluid_properties(P, T, fluid_);
+        };
+    }
     else
     {
         throw std::invalid_argument("Equation of State not found/defined.");

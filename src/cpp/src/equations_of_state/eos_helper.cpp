@@ -4,14 +4,12 @@
 const double R = 8.314462618;
 
 std::vector<double>
-find_z(double A, double B)
+find_z(double a0, double a1, double a2)
 {
 
-    double a2, a1, a0, amax, rr, xinf1, xold, xnew, x1, x2, x3, gx0, gx1, gx2, a, b, c;
+    double amax, rr, xinf1, xold, xnew, x1, x2, x3, gx0, gx1, gx2, a, b, c;
     std::size_t iter;
-    a2 = B - 1.0;
-    a1 = A - 3.0 * B * B - 2.0 * B;
-    a0 = -A * B + B * B + B * B * B;
+
     amax = maxvalue(fabs(a2), fabs(a1), fabs(a0));
     rr = 1.0 + amax;
     xinf1 = -a2 / 3.0;
@@ -108,4 +106,13 @@ double maxvalue(double num1, double num2, double num3)
     {
         return num3;
     }
+}
+
+void CheckValidPressure(double P)
+{
+    // TODO: improve out of range values in EoS
+    // if (P < 0)
+    // {
+    //     std::cout << "Pressure values cannot be negative, P=" << P << std::endl;
+    // }
 }

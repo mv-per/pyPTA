@@ -35,6 +35,96 @@ TEST(test_pta_mixture, testMixtureCalculation)
     ASSERT_EQ(bulk_composition_fraction.size(), ns.size());
 }
 
+TEST(test_pta_mixture, testMixtureCalculationDRASRK)
+{
+    std::string potential = DRA_POTENTIAL;
+    auto pta_model = MixturePTA(potential, "srk", "excess", 155);
+
+    Fluid co2;
+    co2.CriticalPressure = 73.773e5;
+    co2.CriticalTemperature = 304.13;
+    co2.AccentricFactor = 0.22394;
+
+    Fluid ch4;
+    ch4.CriticalPressure = 45.992e5;
+    ch4.CriticalTemperature = 190.56;
+    ch4.AccentricFactor = 0.01142;
+
+    std::vector<double> CO2_DRA_params = {7880.19, 0.29, 2.};
+    std::vector<double> CH4_DRA_params = {5600, 0.36, 3.};
+
+    std::vector<double> bulk_composition_fraction = {0.25, 0.75};
+
+    std::vector<double>
+        ns = pta_model.GetLoading(bulk_composition_fraction, 101000.0, 318.2, {CO2_DRA_params, CH4_DRA_params}, {co2, ch4});
+
+    ASSERT_EQ(bulk_composition_fraction.size(), ns.size());
+}
+
+TEST(test_pta_mixture, testMixtureCalculationLeeSRK)
+{
+    std::string potential = LEE_POTENTIAL;
+    auto pta_model = MixturePTA(potential, "srk", "excess", 155);
+
+    Adsorbent Z01x = Adsorbent("Z01x", 3.35, 0.382);
+
+    pta_model.SetAdsorbent(Z01x);
+
+    Fluid co2;
+    co2.CriticalPressure = 73.773e5;
+    co2.CriticalTemperature = 304.13;
+    co2.AccentricFactor = 0.22394;
+    co2.LennardJonnesDiameter = 3.941;
+
+    Fluid ch4;
+    ch4.CriticalPressure = 45.992e5;
+    ch4.CriticalTemperature = 190.56;
+    ch4.AccentricFactor = 0.01142;
+    ch4.LennardJonnesDiameter = 3.789;
+
+    std::vector<double> CO2_DRA_params = {109.32, 13.34, 611.8};
+    std::vector<double> CH4_DRA_params = {92.32, 13.34, 456.8}; // eps_k, L, A
+
+    std::vector<double> bulk_composition_fraction = {0.25, 0.75};
+
+    std::vector<double>
+        ns = pta_model.GetLoading(bulk_composition_fraction, 101000.0, 318.2, {CO2_DRA_params, CH4_DRA_params}, {co2, ch4});
+
+    ASSERT_EQ(bulk_composition_fraction.size(), ns.size());
+}
+
+TEST(test_pta_mixture, testMixtureCalculationSteeleSRK)
+{
+    std::string potential = STEELE_POTENTIAL;
+    auto pta_model = MixturePTA(potential, "srk", "excess", 155);
+
+    Adsorbent Z01x = Adsorbent("Z01x", 3.35, 0.382);
+
+    pta_model.SetAdsorbent(Z01x);
+
+    Fluid co2;
+    co2.CriticalPressure = 73.773e5;
+    co2.CriticalTemperature = 304.13;
+    co2.AccentricFactor = 0.22394;
+    co2.LennardJonnesDiameter = 3.941;
+
+    Fluid ch4;
+    ch4.CriticalPressure = 45.992e5;
+    ch4.CriticalTemperature = 190.56;
+    ch4.AccentricFactor = 0.01142;
+    ch4.LennardJonnesDiameter = 3.789;
+
+    std::vector<double> CO2_DRA_params = {109.32, 14.90, 611.8};
+    std::vector<double> CH4_DRA_params = {92.32, 14.90, 456.8}; // eps_k, L, A
+
+    std::vector<double> bulk_composition_fraction = {0.25, 0.75};
+
+    std::vector<double>
+        ns = pta_model.GetLoading(bulk_composition_fraction, 101000.0, 318.2, {CO2_DRA_params, CH4_DRA_params}, {co2, ch4});
+
+    ASSERT_EQ(bulk_composition_fraction.size(), ns.size());
+}
+
 TEST(test_pta_mixture, testMixtureCalculationLee)
 {
     std::string potential = LEE_POTENTIAL;
