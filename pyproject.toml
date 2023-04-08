@@ -29,6 +29,8 @@ classifiers = [
 "Homepage" = "https://github.com/mv-per/pyPTA"
 "Bug Tracker" = "https://github.com/mv-per/pyPTA/issues"
 
+
+
 [tool.mypy]
 files = "setup.py"
 python_version = "3.7"
