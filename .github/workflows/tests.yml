@@ -14,14 +14,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        submodules: true
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Clone submodules
-      run: |
-        git pull --recurse-submodules
-        git submodule update --remote --recursive
     - name: Install build dependencies
       run: |
         python -m pip install --upgrade pip setuptools wheel pybind11 cmake
