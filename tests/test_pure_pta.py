@@ -23,9 +23,29 @@ def test_create_pure_pta(adsorption_potential:str)->None:
         (STEELE_POTENTIAL, [109.32, 13.34, 611.88], 7.50000),
     ]
 )
-def test_pure_pta_calculate_loading(setup_fluid:Fluid, adsorption_potential:str, parameters:List[float], expected_calculated_loading:float)->None:
+def test_pure_pta_calculate_loading_pr77(setup_fluid:Fluid, adsorption_potential:str, parameters:List[float], expected_calculated_loading:float)->None:
 
     pure_pta = PurePTA(adsorption_potential, 'pr77', 'excess', 555)
+
+    adsorbent = Adsorbent("Z01x", 3.35, 0.382)
+    pure_pta.set_adsorbent(adsorbent)
+    setup_fluid.lennard_jonnes_diameter = 3.941
+
+    loading = pure_pta.get_loading(1e6, 305, parameters, setup_fluid)
+
+    assert loading == pytest.approx(expected_calculated_loading)
+
+@pytest.mark.parametrize(
+    'adsorption_potential, parameters, expected_calculated_loading',
+    [
+        (DRA_POTENTIAL, [7880.19, 0.29, 2.], 5.0415179),
+        (LEE_POTENTIAL, [125.63, 12.26, 765.70], 5.3310869),
+        (STEELE_POTENTIAL, [109.32, 13.34, 611.88], 6.7061698),
+    ]
+)
+def test_pure_pta_calculate_loading_srk(setup_fluid:Fluid, adsorption_potential:str, parameters:List[float], expected_calculated_loading:float)->None:
+
+    pure_pta = PurePTA(adsorption_potential, 'srk', 'excess', 555)
 
     adsorbent = Adsorbent("Z01x", 3.35, 0.382)
     pure_pta.set_adsorbent(adsorbent)
