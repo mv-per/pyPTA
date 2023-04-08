@@ -1,4 +1,4 @@
-# Under development
+![Build and Testing workflow](https://github.com/mv-per/pyPTA/actions/workflows/tests.yml/badge.svg)
 
 # pyPTA
 Python package for Multicomponent Potential Theory of Adsorption
