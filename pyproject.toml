@@ -38,6 +38,7 @@ disallow_untyped_defs = true
 enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
 warn_unreachable = true
 ignore_missing_imports = true
+follow_imports = skip
 
 [[tool.mypy.overrides]]
 module = ["ninja"]
