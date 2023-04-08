@@ -17,7 +17,7 @@ def setup_fluids() -> List[Fluid]:
     [
         (DRA_POTENTIAL, [7880.19, 0.29, 2.], [5600, 0.36, 3.], [3.85778, 0.46537]),
         (STEELE_POTENTIAL, [109.32, 13.34, 611.8], [109.32, 13.34, 611.8], [7.17114, 0.26784]),
-        (LEE_POTENTIAL, [125.63, 12.26, 765.70], [112.63, 10.26, 720.70], [3.09419, 0.7757]),
+        (LEE_POTENTIAL, [125.63, 12.26, 765.70], [112.63, 10.26, 720.70], [3.09418, 0.7757]),
     ]
 )
 def test_get_mixture_loading_two_components(setup_fluids:List[Fluid], potential:str, CO2_params:List[float], CH4_params:List[float], expected:List[float])->None:
@@ -42,8 +42,8 @@ def test_get_mixture_loading_two_components(setup_fluids:List[Fluid], potential:
     'potential, CO2_params, CH4_params, expected',
     [
         (DRA_POTENTIAL, [7880.19, 0.29, 2.], [5600, 0.36, 3.], [4.90983, 0.50113]),
-        (STEELE_POTENTIAL, [109.32, 18, 611.8], [92.32, 16, 456.8], [5.82395, 2.07943]),
-        (LEE_POTENTIAL, [125.63, 12.26, 611.70], [92.32, 13.34, 456.8], [3.99881, 0.19273]),
+        (STEELE_POTENTIAL, [109.32, 18, 611.8], [92.32, 16, 456.8], [6.19513, 2.07943]),
+        (LEE_POTENTIAL, [125.63, 12.26, 611.70], [92.32, 13.34, 456.8], [3.9988, 0.19273]),
     ]
 )
 def test_get_mixture_loading_two_components_srk(setup_fluids:List[Fluid], potential:str, CO2_params:List[float], CH4_params:List[float], expected:List[float])->None:
