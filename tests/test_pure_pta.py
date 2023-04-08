@@ -22,7 +22,7 @@ def test_create_pure_pta(adsorption_potential:str)->None:
         (STEELE_POTENTIAL, [109.32, 13.34, 611.88], 7.50000),
     ]
 )
-def test_pure_pta_calculate_loading(setup_fluid:Fluid, adsorption_potential:str, parameters:list[float], expected_calculated_loading:float)->None:
+def test_pure_pta_calculate_loading(setup_fluid:Fluid, adsorption_potential:str, parameters:List[float], expected_calculated_loading:float)->None:
 
     pure_pta = PurePTA(adsorption_potential, 'pr77', 'excess', 555)
 
@@ -41,7 +41,7 @@ def test_pure_pta_calculate_loading(setup_fluid:Fluid, adsorption_potential:str,
         (STEELE_POTENTIAL, [109.32, 13.34, 611.88]),
     ]
 )
-def test_pure_pta_calculate_loading_error_without_adsorbent(setup_fluid:Fluid, adsorption_potential:str, parameters:list[float])->None:
+def test_pure_pta_calculate_loading_error_without_adsorbent(setup_fluid:Fluid, adsorption_potential:str, parameters:List[float])->None:
 
     pure_pta = PurePTA(adsorption_potential, 'pr77', 'excess', 555)
 

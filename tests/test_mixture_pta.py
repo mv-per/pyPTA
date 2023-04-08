@@ -1,8 +1,9 @@
 from pyPTA import MixturePTA, Fluid, DRA_POTENTIAL, LEE_POTENTIAL, STEELE_POTENTIAL, Adsorbent
 import pytest
+from typing import List
 
 @pytest.fixture
-def setup_fluids() -> list[Fluid]:
+def setup_fluids() -> List[Fluid]:
     fluids =  [Fluid('CO2', 73.773e5, 304.13, 0.22394), Fluid('CH4', 45.99e5, 190.56, 0.01142), Fluid('N2', 3395800.0, 126.192, 0.0372)]
 
     fluids[0].lennard_jonnes_diameter = 3.941
@@ -19,7 +20,7 @@ def setup_fluids() -> list[Fluid]:
         (LEE_POTENTIAL, [125.63, 12.26, 765.70], [112.63, 10.26, 720.70], [3.09419, 0.7757]),
     ]
 )
-def test_get_mixture_loading_two_components(setup_fluids:list[Fluid], potential:str, CO2_params:list[float], CH4_params:list[float], expected:list[float])->None:
+def test_get_mixture_loading_two_components(setup_fluids:List[Fluid], potential:str, CO2_params:List[float], CH4_params:List[float], expected:List[float])->None:
 
     bulk_composition = [0.5, 0.5]
     mixture_params = [CO2_params, CH4_params]
@@ -44,7 +45,7 @@ def test_get_mixture_loading_two_components(setup_fluids:list[Fluid], potential:
         (LEE_POTENTIAL, [125.63, 12.26, 765.70], [112.63, 10.26, 720.70], [3.85778, 0.46537]),
     ]
 )
-def test_raise_error_get_mixture_loading_Lj_without_adsorbent(setup_fluids:list[Fluid], potential:str, CO2_params:list[float], CH4_params:list[float], expected:list[float])->None:
+def test_raise_error_get_mixture_loading_Lj_without_adsorbent(setup_fluids:List[Fluid], potential:str, CO2_params:List[float], CH4_params:List[float], expected:List[float])->None:
 
     bulk_composition = [0.5, 0.5]
     mixture_params = [CO2_params, CH4_params]
@@ -64,7 +65,7 @@ def test_raise_error_get_mixture_loading_Lj_without_adsorbent(setup_fluids:list[
     'potential, CO2_params, CH4_params, N2_params, expected',
     [(DRA_POTENTIAL, [7880.19, 0.29, 2.], [5600, 0.36, 3.], [5000.5, 0.57, 2.] , [2.52491, 0.28772, 0.38486])]
 )
-def test_get_mixture_loading_three_components(setup_fluids:list[Fluid], potential:str, CO2_params:list[float], CH4_params:list[float], N2_params:list[float], expected:list[float])->None:
+def test_get_mixture_loading_three_components(setup_fluids:List[Fluid], potential:str, CO2_params:List[float], CH4_params:List[float], N2_params:List[float], expected:List[float])->None:
 
     bulk_composition = [0.25, 0.25, 0.5]
     mixture_params = [CO2_params, CH4_params, N2_params]
