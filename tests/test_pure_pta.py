@@ -1,5 +1,6 @@
 from pyPTA import PurePTA, Fluid, Adsorbent, DRA_POTENTIAL, STEELE_POTENTIAL, LEE_POTENTIAL
 import pytest
+from typing import List
 
 @pytest.fixture
 def setup_fluid() -> Fluid:
