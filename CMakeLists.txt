@@ -26,7 +26,6 @@ file (GLOB EOSHeaders "src/cpp/src/equations_of_state/*.h")
 
 find_package(Python COMPONENTS Interpreter Development)
 add_subdirectory(pybind11)
-# find_package(pybind11 CONFIG REQUIRED)
 pybind11_add_module(
     ${This} 
     ${Sources} 
