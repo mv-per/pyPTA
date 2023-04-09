@@ -12,12 +12,14 @@ jobs:
         with:
             submodules: recursive
       - name: build cPTA and tests
+        working-directory: /home/runner/work/pyPTA/pyPTA/src/cpp/
         run: |
-          mkdir /home/runner/work/pyPTA/pyPTA/src/cpp/build
-          cd /home/runner/work/pyPTA/pyPTA/src/cpp/build && cmake ..
-          cmake --build /home/runner/work/pyPTA/pyPTA/src/cpp/build --config Release --target cPTATests -j 6 --
-          cd /home/runner/work/pyPTA/pyPTA/src/cpp/build && make
+          mkdir build
+          cd build && cmake ..
+          cmake --build build --config Release --target cPTATests -j 6 --
+          cd build && make
       - name: Run Tests
+        working-directory: /home/runner/work/pyPTA/pyPTA/src/cpp/
         run: |   
-          cd /home/runner/work/pyPTA/pyPTA/src/cpp/build/tests/ && ls
-          ./home/runner/work/pyPTA/pyPTA/src/cpp/build/tests/cPTATests
+          cd build/tests/ && ls
+          . build/tests/cPTATests
