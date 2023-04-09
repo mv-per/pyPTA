@@ -15,7 +15,6 @@ public:
     
     double CriticalCompressibility = 0;
     double LennardJonnesDiameter = 0;
-    double MolecularWeight = 0;
     ~Fluid() {}
     Fluid() {}
     Fluid(std::string Name,
@@ -23,8 +22,7 @@ public:
           double CriticalTemperature,
           double AccentricFactor,
           double CriticalCompressibility,
-          double LennardJonnesDiameter,
-          double MolecularWeight)
+          double LennardJonnesDiameter)
     {
         this->Name = Name;
         this->CriticalPressure = CriticalPressure;
@@ -32,7 +30,6 @@ public:
         this->AccentricFactor = AccentricFactor;
         this->CriticalCompressibility = CriticalCompressibility;
         this->LennardJonnesDiameter = LennardJonnesDiameter;
-        this->MolecularWeight = MolecularWeight;
     }
     Fluid(std::string Name,
           double CriticalPressure,

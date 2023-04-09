@@ -1,12 +1,6 @@
 #ifndef SRK_PENELOUX_H
 #define SRK_PENELOUX_H
 
-#include <tuple>
-#include <cmath>
-#include <vector>
-#include "../data_classes.h"
-#include "../helpers.h"
-#include "eos_helper.h"
 #include "srk.h"
 
 class srk_peneloux

@@ -35,5 +35,6 @@ double CalculateMixturePenelouxVolumeTranslation(double vol, double T, std::vect
 double CalculatePurePenelouxVolumeTranslation(double vol, double T, Fluid fluid);
 
 double GetTemperatureDependentVolumeShiftFactor(double T, Fluid fluid);
+Fluid CheckForFluidCriticalCompressibility(Fluid fluid);
 
 #endif

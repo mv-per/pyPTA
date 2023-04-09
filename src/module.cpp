@@ -26,6 +26,25 @@ PYBIND11_MODULE(pyPTA, m)
              py::arg("atomic_density"));
 
     py::class_<Fluid>(m, "Fluid")
+        .def_readwrite("name", &Fluid::Name)
+        .def_readwrite("critical_pressure", &Fluid::CriticalPressure)
+        .def_readwrite("critical_temperature", &Fluid::CriticalTemperature)
+        .def_readwrite("accentric_factor", &Fluid::AccentricFactor)
+        .def_readwrite("critical_compressibility", &Fluid::CriticalCompressibility)
+        .def_readwrite("lennard_jonnes_diameter", &Fluid::LennardJonnesDiameter)
+        .def(py::init([](std::string name,
+                         double critical_pressure,
+                         double critical_temperature,
+                         double accentric_factor,
+                         double critical_compressibility,
+                         double lennard_jonnes_diameter)
+                      { return new Fluid(name, critical_pressure, critical_temperature, accentric_factor, critical_compressibility, lennard_jonnes_diameter); }),
+             py::arg("name"),
+             py::arg("critical_pressure"),
+             py::arg("critical_temperature"),
+             py::arg("accentric_factor"),
+             py::arg("critical_compressibility"),
+             py::arg("lennard_jonnes_diameter"))
         .def(py::init([](std::string name,
                          double critical_pressure,
                          double critical_temperature,
@@ -35,13 +54,8 @@ PYBIND11_MODULE(pyPTA, m)
              py::arg("critical_pressure"),
              py::arg("critical_temperature"),
              py::arg("accentric_factor"))
-        .def_readwrite("name", &Fluid::Name)
-        .def_readwrite("critical_pressure", &Fluid::CriticalPressure)
-        .def_readwrite("critical_temperature", &Fluid::CriticalTemperature)
-        .def_readwrite("critical_compressibility", &Fluid::CriticalCompressibility)
-        .def_readwrite("accentric_factor", &Fluid::AccentricFactor)
-        .def_readwrite("lennard_jonnes_diameter", &Fluid::LennardJonnesDiameter)
         .def(py::init<>());
+
 
     py::class_<PurePTA>(m, "PurePTA")
         .def(py::init<std::string &, std::string &, std::string &, std::size_t &>(),

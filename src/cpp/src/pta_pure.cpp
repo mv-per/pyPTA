@@ -127,6 +127,7 @@ std::function<mono_eos(double, double)> PurePTA::GetEquationOfStateInvoker(Fluid
     }
     else if (this->EquationOfState == "pr77-peneloux")
     {
+        fluid_ = CheckForFluidCriticalCompressibility(fluid_);
         return [=](double P, double T)
         {
             return pr77_peneloux().get_mono_fluid_properties(P, T, fluid_);
@@ -141,6 +142,7 @@ std::function<mono_eos(double, double)> PurePTA::GetEquationOfStateInvoker(Fluid
     }
     else if (this->EquationOfState == "srk-peneloux")
     {
+        fluid_ = CheckForFluidCriticalCompressibility(fluid_);
         return [=](double P, double T)
         {
             return srk_peneloux().get_mono_fluid_properties(P, T, fluid_);

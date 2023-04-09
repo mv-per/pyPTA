@@ -50,7 +50,6 @@ TEST(test_logic, CalculatePR77PENELOUXMonoWithoutProvidingCriticalZ)
     co2.CriticalPressure = 7.38e6;
     co2.CriticalTemperature = 304.19;
     co2.AccentricFactor = 0.22394;
-    co2.MolecularWeight = 44.08;
 
     double density = pr77_peneloux().get_mono_fluid_properties(1000000, 303, co2).dens;
 
@@ -64,7 +63,6 @@ TEST(test_logic, CalculatePR77PENELOUXMonoProvidingCriticalZ)
     co2.CriticalPressure = 7.38e6;
     co2.CriticalTemperature = 304.19;
     co2.AccentricFactor = 0.22394;
-    co2.MolecularWeight = 44.08;
     co2.CriticalCompressibility = 0.29;
 
     double density = pr77_peneloux().get_mono_fluid_properties(1000000, 303, co2).dens;

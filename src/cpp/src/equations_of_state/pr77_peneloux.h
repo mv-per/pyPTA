@@ -1,12 +1,6 @@
 #ifndef PR77_PENELOUX_H
 #define PR77_PENELOUX_H
 
-#include <tuple>
-#include <cmath>
-#include <vector>
-#include "../data_classes.h"
-#include "../helpers.h"
-#include "eos_helper.h"
 #include "pr77.h"
 
 class pr77_peneloux

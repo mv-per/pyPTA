@@ -136,22 +136,10 @@ void CheckValidPressure(double P)
 */
 double GetTemperatureDependentVolumeShiftFactor(double T, Fluid fluid){
     double Tr = T/fluid.CriticalTemperature;
-    double CriticalCompressibility;
-
-    if (fluid.CriticalCompressibility)
-    {
-        CriticalCompressibility = fluid.CriticalCompressibility;
-    }
-    else
-    {
-        std::cout << "Critical compressibility not provided, Calculating from fluid's accentric factor" << std::endl;
-        CriticalCompressibility = 0.29506 - 0.08775* fluid.AccentricFactor;
-    }
-
-    double Cci = R*fluid.CriticalTemperature*(0.3074-CriticalCompressibility)/fluid.CriticalPressure; // [m3/mol]
-    double Ci = 0.252*R*fluid.CriticalTemperature*(-0.4024 + 1.5448*CriticalCompressibility) / fluid.CriticalPressure;  // [m3/mol]
-    double gamma = 12.67 - 107.21*CriticalCompressibility + 246.78*CriticalCompressibility*CriticalCompressibility; // [-]
-    double eta = 26.966-74.458*CriticalCompressibility; // [-]
+    double Cci = R*fluid.CriticalTemperature*(0.3074-fluid.CriticalCompressibility)/fluid.CriticalPressure; // [m3/mol]
+    double Ci = 0.252*R*fluid.CriticalTemperature*(-0.4024 + 1.5448*fluid.CriticalCompressibility) / fluid.CriticalPressure;  // [m3/mol]
+    double gamma = 12.67 - 107.21*fluid.CriticalCompressibility + 246.78*fluid.CriticalCompressibility*fluid.CriticalCompressibility; // [-]
+    double eta = 26.966-74.458*fluid.CriticalCompressibility; // [-]
     double m = 0.37464+1.54226*fluid.AccentricFactor - 0.26992*fluid.AccentricFactor*fluid.AccentricFactor; // [-]
     double alpha = std::pow(1 + m*(1-std::sqrt(Tr)),2); // [-]
 
@@ -170,21 +158,8 @@ double GetTemperatureDependentVolumeShiftFactor(double T, Fluid fluid){
  */
 double GetFluidVolumeShiftFactor(Fluid fluid)
 {
-    double CriticalCompressibility;
-    if (fluid.CriticalCompressibility)
-    {
-        CriticalCompressibility = fluid.CriticalCompressibility;
-    }
-    else
-    {
-        std::cout << "Critical compressibility not provided, calculating from critical properties" << std::endl;
-        CriticalCompressibility = 0.29506 - 0.08775* fluid.AccentricFactor;
-    }
-
-    std::cout << CriticalCompressibility << std::endl;
-
     return 0.40768 *
-           R * fluid.CriticalTemperature * (0.29441 - CriticalCompressibility) / fluid.CriticalPressure;
+           R * fluid.CriticalTemperature * (0.29441 - fluid.CriticalCompressibility) / fluid.CriticalPressure;
            // [m3 Pa / K / mol * K / Pa] == [m3/mol]
 }
 
@@ -203,4 +178,13 @@ double CalculateMixturePenelouxVolumeTranslation(double vol, double T, std::vect
     }
 
     return vol - MixtureVolumeShiftFactor;
+}
+
+Fluid CheckForFluidCriticalCompressibility(Fluid fluid){
+    if (!fluid.CriticalCompressibility){
+        std::cout << "Critical compressibility not provided for " << fluid.Name << ", Calculating from fluid's accentric factor" << std::endl;
+        fluid.CriticalCompressibility  = 0.29506 - 0.08775* fluid.AccentricFactor;
+    }
+
+    return fluid;
 }

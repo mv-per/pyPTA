@@ -15,9 +15,11 @@ class pr77
 	double Zmin, Zvalue, Zmax;
 	double gibbsenergymin, gibbsenergymax, amix, bmix, A, B, sumat;
 	double Z, dens, vol, Z_;
+	double a0, a1, a2;
 	double VolumeShiftFactor = 0;
 	std::tuple<double, double> get_critical_properties(double T, double Pc, double Tc, double w);
 	std::tuple<double, double, double, double> get_gibbs_energy(double P, std::vector<double> Z, double A, double B, int min_or_max);
+	std::tuple<double, double,double> GetQuadraticCoefficients(double A, double B);
 
 public:
 	pr77();

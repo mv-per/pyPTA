@@ -16,6 +16,13 @@ pr77::pr77(double VolumeShiftFactor){
     this->VolumeShiftFactor = VolumeShiftFactor;
 }
 
+std::tuple<double, double,double> pr77::GetQuadraticCoefficients(double A, double B){
+    double a2 = B - 1.0;
+    double a1 = A - 3.0 * B * B - 2.0 * B;
+    double a0 = -A * B + B * B + B * B * B;
+    return std::make_tuple(a0, a1, a2);
+}
+
 /**
  * Get the Peng-Robinson critical parameters (a,b)
  *
@@ -80,6 +87,7 @@ struct mono_eos pr77::get_mono_fluid_properties(double P, double T, Fluid fluid)
     std::tie(a, b) = get_critical_properties(T, fluid.CriticalPressure, fluid.CriticalTemperature, fluid.AccentricFactor);
 
     if (this->VolumeShiftFactor){
+        std::cout << "has c" << std::endl;
         b = b-this->VolumeShiftFactor;
     }
 
@@ -87,9 +95,7 @@ struct mono_eos pr77::get_mono_fluid_properties(double P, double T, Fluid fluid)
     double B = b * P / R / T;
 
     // cubic equation parameters
-    double a2 = B - 1.0;
-    double a1 = A - 3.0 * B * B - 2.0 * B;
-    double a0 = -A * B + B * B + B * B * B;
+    std::tie(a0, a1, a2) = GetQuadraticCoefficients(A, B);
 
     std::vector<double> Z = find_z(a0, a1, a2);
 
@@ -136,6 +142,7 @@ struct mix_eos pr77::get_mixture_fluid_properties(std::vector<double> x, double 
 
     ncomp = x.size();
 
+    
     std::vector<double> fug(ncomp, 0.0);
     std::vector<double> phi(ncomp, 0.0);
     std::vector<double> phimin(ncomp, 0.0);
@@ -180,10 +187,7 @@ struct mix_eos pr77::get_mixture_fluid_properties(std::vector<double> x, double 
     A = amix * P / R / R / T / T;
     B = bmix * P / R / T;
 
-    // cubic equation parameters
-    double a2 = B - 1.0;
-    double a1 = A - 3.0 * B * B - 2.0 * B;
-    double a0 = -A * B + B * B + B * B * B;
+    std::tie(a0, a1, a2) = GetQuadraticCoefficients(A, B);
 
     std::vector<double> Z = find_z(a0, a1, a2);
 

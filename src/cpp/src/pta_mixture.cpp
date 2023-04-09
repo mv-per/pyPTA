@@ -30,7 +30,7 @@ std::vector<double> MixturePTA::GetLoading(std::vector<double> composition, doub
 
 std::function<mix_eos(std::vector<double>, double, double)> MixturePTA::get_equation_of_state_mixture(std::vector<Fluid> fluids)
 {
-
+	std::cout << this->equation_of_state << std::endl;
 	if (this->equation_of_state == "pr77")
 	{
 		return [=](std::vector<double> composition, double P, double T)
@@ -40,6 +40,9 @@ std::function<mix_eos(std::vector<double>, double, double)> MixturePTA::get_equa
 	}
 	else if (this->equation_of_state == "pr77-peneloux")
 	{
+		for(std::size_t i=0;i<fluids.size();i++){
+			fluids[i]= CheckForFluidCriticalCompressibility(fluids[i]);
+		}
 		return [=](std::vector<double> composition, double P, double T)
 		{
 			return pr77_peneloux().get_mixture_fluid_properties(composition, P, T, fluids);
@@ -54,6 +57,9 @@ std::function<mix_eos(std::vector<double>, double, double)> MixturePTA::get_equa
 	}
 	else if (this->equation_of_state == "srk-peneloux")
 	{
+		for(std::size_t i=0;i<fluids.size();i++){
+			fluids[i]= CheckForFluidCriticalCompressibility(fluids[i]);
+		}
 		return [=](std::vector<double> composition, double P, double T)
 		{
 			return srk_peneloux().get_mixture_fluid_properties(composition, P, T, fluids);
@@ -254,7 +260,7 @@ double MixturePTA::get_equilibrium_difference(double Pz,
 											  call_mix_eos eos)
 {
 
-	if (std::isinf(Pz) == 1 || std::isnan(Pz) == 1)
+	if (std::isinf(Pz) == 1 || std::isnan(Pz) == 1 || Pz <= 0)
 	{
 		return 1.0;
 	}
@@ -279,8 +285,8 @@ struct Equilibrium MixturePTA::find_equilibrium_properties(double Pz_old, std::v
 	std::vector<double> new_adsorbed_composition = xold;
 	struct mix_eos adsorbed = eos(new_adsorbed_composition, Pz, T);
 	new_adsorbed_composition = get_new_adsorbed_fractions(fb, f_eps, adsorbed.phi, Pz);
-
 	k = 0;
+
 	do
 	{
 
@@ -291,7 +297,7 @@ struct Equilibrium MixturePTA::find_equilibrium_properties(double Pz_old, std::v
 		};
 
 		// Find the Equilibrium pressure for the current composition
-		Pz = brent_zeroin(min, Pz, 1.0e-12);
+		Pz = brent_zeroin(min, Pz, 1.0e-8);
 
 		// Get the fluid properties
 		struct mix_eos adsorbed = eos(new_adsorbed_composition, Pz, T);

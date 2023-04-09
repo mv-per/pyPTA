@@ -15,14 +15,14 @@ def setup_fluids() -> List[Fluid]:
 @pytest.mark.parametrize(
     'potential, CO2_params, CH4_params, expected',
     [
-        (DRA_POTENTIAL, [7880.19, 0.29, 2.], [5600, 0.36, 3.], [3.85778, 0.46537]),
-        (STEELE_POTENTIAL, [109.32, 13.34, 611.8], [109.32, 13.34, 611.8], [7.17114, 0.26784]),
-        (LEE_POTENTIAL, [125.63, 12.26, 765.70], [112.63, 10.26, 720.70], [3.09418, 0.7757]),
+        (DRA_POTENTIAL, [7880.19, 0.29, 2.], [5600, 0.36, 3.], [2.50608, 0.87942]),
+        (STEELE_POTENTIAL, [109.32, 13.34, 611.8], [109.32, 13.34, 611.8], [6.56534, 0.83682]),
+        (LEE_POTENTIAL, [125.63, 12.26, 765.70], [112.63, 10.26, 720.70], [1.74713, 1.35373]),
     ]
 )
 def test_get_mixture_loading_two_components(setup_fluids:List[Fluid], potential:str, CO2_params:List[float], CH4_params:List[float], expected:List[float])->None:
 
-    bulk_composition = [0.5, 0.5]
+    bulk_composition = [.25, .75]
     mixture_params = [CO2_params, CH4_params]
     fluids = setup_fluids[:2]
     adsorbent = Adsorbent("Z01x", 3.35, 0.382)
@@ -41,9 +41,9 @@ def test_get_mixture_loading_two_components(setup_fluids:List[Fluid], potential:
 @pytest.mark.parametrize(
     'potential, CO2_params, CH4_params, expected',
     [
-        (DRA_POTENTIAL, [7880.19, 0.29, 2.], [5600, 0.36, 3.], [4.90983, 0.50113]),
-        (STEELE_POTENTIAL, [109.32, 18, 611.8], [92.32, 16, 456.8], [6.19513, 2.07943]),
-        (LEE_POTENTIAL, [125.63, 12.26, 611.70], [92.32, 13.34, 456.8], [3.9988, 0.19273]),
+        (DRA_POTENTIAL, [7880.19, 0.29, 2.], [5600, 0.36, 3.], [2.90177, 1.45198]),
+        (STEELE_POTENTIAL, [109.32, 18, 611.8], [92.32, 16, 456.8], [4.80308, 2.51869]),
+        (LEE_POTENTIAL, [125.63, 12.26, 611.70], [92.32, 13.34, 456.8], [2.69445, 0.77108]),
     ]
 )
 def test_get_mixture_loading_two_components_srk(setup_fluids:List[Fluid], potential:str, CO2_params:List[float], CH4_params:List[float], expected:List[float])->None:
@@ -91,13 +91,32 @@ def test_raise_error_get_mixture_loading_Lj_without_adsorbent(setup_fluids:List[
     'potential, CO2_params, CH4_params, N2_params, expected',
     [(DRA_POTENTIAL, [7880.19, 0.29, 2.], [5600, 0.36, 3.], [5000.5, 0.57, 2.] , [2.52491, 0.28772, 0.38486])]
 )
-def test_get_mixture_loading_three_components(setup_fluids:List[Fluid], potential:str, CO2_params:List[float], CH4_params:List[float], N2_params:List[float], expected:List[float])->None:
+def test_get_mixture_loading_three_components_pr(setup_fluids:List[Fluid], potential:str, CO2_params:List[float], CH4_params:List[float], N2_params:List[float], expected:List[float])->None:
 
     bulk_composition = [0.25, 0.25, 0.5]
     mixture_params = [CO2_params, CH4_params, N2_params]
     fluids = setup_fluids[:]
 
     model = MixturePTA(potential, 'pr77', 'excess', 555)
+
+    calculated = model.get_loading(bulk_composition, 1e6, 310.2, mixture_params, fluids)
+
+    calculated = [round(val, 5) for val in calculated]
+
+    assert len(calculated) == len(bulk_composition)
+    assert calculated == expected
+    
+@pytest.mark.parametrize(
+    'potential, CO2_params, CH4_params, N2_params, expected',
+    [(DRA_POTENTIAL, [7880.19, 0.29, 2.], [5600, 0.36, 3.], [5000.5, 0.57, 2.] , [1.2, 0.3971, 1.18704])]
+)
+def test_get_mixture_loading_three_components_srk(setup_fluids:List[Fluid], potential:str, CO2_params:List[float], CH4_params:List[float], N2_params:List[float], expected:List[float])->None:
+
+    bulk_composition = [0.25, 0.25, 0.5]
+    mixture_params = [CO2_params, CH4_params, N2_params]
+    fluids = setup_fluids[:]
+
+    model = MixturePTA(potential, 'srk', 'excess', 555)
 
     calculated = model.get_loading(bulk_composition, 1e6, 310.2, mixture_params, fluids)
 
