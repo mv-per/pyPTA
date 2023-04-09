@@ -1,6 +1,8 @@
 #include "math.h"
 #include "eos_helper.h"
 
+#include "eos.h"
+
 const double R = 8.314462618;
 
 std::vector<double>
@@ -115,4 +117,51 @@ void CheckValidPressure(double P)
     // {
     //     std::cout << "Pressure values cannot be negative, P=" << P << std::endl;
     // }
+}
+
+double GetFluidVolumeShiftFactor(Fluid fluid)
+{
+    double CriticalCompressibility;
+    if (fluid.CriticalCompressibility)
+    {
+        CriticalCompressibility = *fluid.CriticalCompressibility;
+    }
+    else
+    {
+        std::cout << "Critical compressibility not provided, calculating from critical properties" << std::endl;
+
+        // double CriticalVolume = R * fluid.CriticalTemperature / fluid.CriticalPressure;
+
+        // std::cout << CriticalVolume << std::endl;
+        // std::cout << fluid.CriticalPressure << std::endl;
+        // std::cout << fluid.Criti << std::endl;
+
+        // CriticalCompressibility = (fluid.CriticalPressure * CriticalVolume) / (R * fluid.CriticalTemperature);
+        CriticalCompressibility = pr77().get_mono_fluid_properties(fluid.CriticalPressure, fluid.CriticalTemperature, fluid).Z;
+    }
+
+    std::cout << R << std::endl;
+    std::cout << CriticalCompressibility << std::endl;
+
+    return 0.40768 *
+           R * fluid.CriticalTemperature * (0.29441 - CriticalCompressibility) / fluid.CriticalPressure;
+}
+
+double CalculatePurePenelouxVolumeTranslation(double vol, Fluid fluid)
+{
+    return vol + GetFluidVolumeShiftFactor(fluid) / *fluid.MolecularWeight;
+}
+
+double CalculateMixturePenelouxVolumeTranslation(double vol, std::vector<double> molar_fractions, std::vector<Fluid> fluids)
+{
+
+    double MixtureMolarWeight = 0;
+    double MixtureVolumeShiftFactor = 0;
+    for (std::size_t i = 0; i < molar_fractions.size(); i++)
+    {
+        MixtureMolarWeight += *fluids[i].MolecularWeight * molar_fractions[i];
+        MixtureVolumeShiftFactor += GetFluidVolumeShiftFactor(fluids[i]) * molar_fractions[i];
+    }
+
+    return vol + MixtureVolumeShiftFactor / MixtureMolarWeight;
 }

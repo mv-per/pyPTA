@@ -5,6 +5,7 @@
 #include <vector>
 #include <iostream>
 #include <sstream>
+#include "../data_classes.h"
 
 /// Gas contsant, [m3 Pa /K / mol]
 extern const double R;
@@ -30,5 +31,8 @@ double minvalue(double num1, double num2, double num3);
 double maxvalue(double num1, double num2, double num3);
 
 void CheckValidPressure(double P);
+
+double CalculateMixturePenelouxVolumeTranslation(double vol, std::vector<double> molar_fractions, std::vector<Fluid> fluids);
+double CalculatePurePenelouxVolumeTranslation(double vol, Fluid fluid);
 
 #endif

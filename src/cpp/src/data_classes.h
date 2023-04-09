@@ -2,6 +2,7 @@
 #define DATA_CLASSES_H
 
 #include <string>
+#include <optional>
 
 class Fluid
 {
@@ -10,9 +11,10 @@ public:
     std::string Name;
     double CriticalPressure;
     double CriticalTemperature;
-    double CriticalCompressibility;
+    std::optional<double> CriticalCompressibility;
     double AccentricFactor;
-    double LennardJonnesDiameter;
+    std::optional<double> LennardJonnesDiameter;
+    std::optional<double> MolecularWeight;
     ~Fluid() {}
     Fluid() {}
     Fluid(std::string Name,
@@ -20,7 +22,8 @@ public:
           double CriticalTemperature,
           double AccentricFactor,
           double CriticalCompressibility = 0.0,
-          double LennardJonnesDiameter = 0.0)
+          double LennardJonnesDiameter = 0.0,
+          double MolecularWeight = 0.0)
     {
         this->Name = Name;
         this->CriticalPressure = CriticalPressure;
@@ -28,6 +31,7 @@ public:
         this->AccentricFactor = AccentricFactor;
         this->CriticalCompressibility = CriticalCompressibility;
         this->LennardJonnesDiameter = LennardJonnesDiameter;
+        this->MolecularWeight = MolecularWeight;
     }
 };
 

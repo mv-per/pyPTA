@@ -3,6 +3,7 @@
 #define EOS_CPP
 
 #include "./pr77.h"
+#include "./pr77_peneloux.h"
 #include "./srk.h"
 #include "./eos_helper.h"
 

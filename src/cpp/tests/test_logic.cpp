@@ -43,6 +43,21 @@ TEST(test_logic, CalculateSRKMono)
     EXPECT_NEAR(fugacity, 953627.1636, 1e-4);
 }
 
+TEST(test_logic, CalculatePR77PENELOUXMono)
+{
+
+    Fluid co2;
+    co2.CriticalPressure = 7.38e6;
+    co2.CriticalTemperature = 304.19;
+    co2.AccentricFactor = 0.22394;
+    co2.MolecularWeight = 44.08;
+    // co2.CriticalCompressibility = 0.29;
+
+    double density = pr77_peneloux().get_mono_fluid_properties(1000000, 303, co2).dens;
+
+    EXPECT_NEAR(density, 419.32390, 1e-4);
+}
+
 TEST(test_logic, CalculateSRKMix)
 {
 
