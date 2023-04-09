@@ -18,7 +18,7 @@ requirements:
     - setuptools
     - wheel
     - ninja
-    - cmake=3.4
+    - cmake>=3.12
   run:
     - python>=3.7
 
