@@ -11,10 +11,12 @@ jobs:
       - uses: actions/checkout@v2
         with:
             submodules: recursive
-      - name: configure cPTA
+      - name: build cPTA and tests
         run: |
           mkdir /home/runner/work/pyPTA/pyPTA/src/cpp/build
           cd /home/runner/work/pyPTA/pyPTA/src/cpp/build && cmake ..
           cmake --build /home/runner/work/pyPTA/pyPTA/src/cpp/build --config Release --target cPTATests -j 6 --
           cd /home/runner/work/pyPTA/pyPTA/src/cpp/build && make
-
+      - name: Run Tests
+         run: |   
+            /home/runner/work/pyPTA/pyPTA/src/cpp/build/tests/cPTATests
