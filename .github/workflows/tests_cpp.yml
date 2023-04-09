@@ -17,7 +17,6 @@ jobs:
           mkdir build
           cd build && cmake ..
           cmake --build . --config Release --target cPTATests -j 6 --
-          make
       - name: Run Tests
         working-directory: /home/runner/work/pyPTA/pyPTA/src/cpp/
         run: |   
