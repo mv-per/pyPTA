@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include <sstream>
 #include "../data_classes.h"
 
 /// Gas contsant, [m3 Pa /K / mol]
