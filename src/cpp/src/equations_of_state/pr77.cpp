@@ -87,7 +87,6 @@ struct mono_eos pr77::get_mono_fluid_properties(double P, double T, Fluid fluid)
     std::tie(a, b) = get_critical_properties(T, fluid.CriticalPressure, fluid.CriticalTemperature, fluid.AccentricFactor);
 
     if (this->VolumeShiftFactor){
-        std::cout << "has c" << std::endl;
         b = b-this->VolumeShiftFactor;
     }
 

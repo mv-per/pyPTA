@@ -30,7 +30,6 @@ std::vector<double> MixturePTA::GetLoading(std::vector<double> composition, doub
 
 std::function<mix_eos(std::vector<double>, double, double)> MixturePTA::get_equation_of_state_mixture(std::vector<Fluid> fluids)
 {
-	std::cout << this->equation_of_state << std::endl;
 	if (this->equation_of_state == "pr77")
 	{
 		return [=](std::vector<double> composition, double P, double T)

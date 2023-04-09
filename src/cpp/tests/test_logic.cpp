@@ -51,9 +51,11 @@ TEST(test_logic, CalculatePR77PENELOUXMonoWithoutProvidingCriticalZ)
     co2.CriticalTemperature = 304.19;
     co2.AccentricFactor = 0.22394;
 
+    co2 = CheckForFluidCriticalCompressibility(co2);
+
     double density = pr77_peneloux().get_mono_fluid_properties(1000000, 303, co2).dens;
 
-    EXPECT_NEAR(density, 370.76332, 1e-4);
+    EXPECT_NEAR(density, 415.80276, 1e-4);
 }
 
 TEST(test_logic, CalculatePR77PENELOUXMonoProvidingCriticalZ)
