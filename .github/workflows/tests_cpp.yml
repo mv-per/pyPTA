@@ -12,10 +12,5 @@ jobs:
         with:
             submodules: recursive
       - name: configure cPTA
-        run: mkdir /home/runner/work/pyPTA/pyPTA/src/cpp/build && cd /home/runner/work/pyPTA/pyPTA/src/cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-Werror" ..
-      - name: make cPTA
-        run: cd /home/runner/work/pyPTA/pyPTA/src/cpp/build && make
-      - name: configure cPTA tests
-        run: mkdir /home/runner/work/pyPTA/pyPTA/src/cpp/tests/build && cd /home/runner/work/pyPTA/pyPTA/src/cpp/tests/build && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-Werror" ..
-      - name: make cPTA tests
-        run: cd /home/runner/work/pyPTA/pyPTA/src/cpp/tests/build && make
+        run: cmake --build /home/runner/work/pyPTA/pyPTA/src/cpp/build --config Release --target cPTATests -j 6 --
+
