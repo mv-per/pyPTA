@@ -11,7 +11,11 @@ jobs:
       - uses: actions/checkout@v2
         with:
             submodules: recursive
-      - name: configure
+      - name: configure cPTA
+        run: mkdir ./src/cpp/src/build && cd ./src/cpp/src/build && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-Werror" ..
+      - name: make cPTA
+        run: cd ./src/cpp/src/build && make
+      - name: configure cPTA tests
         run: mkdir ./src/cpp/tests/build && cd ./src/cpp/tests/build && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-Werror" ..
-      - name: make
+      - name: make cPTA tests
         run: cd ./src/cpp/tests/build && make
