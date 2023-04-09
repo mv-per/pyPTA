@@ -19,6 +19,4 @@ jobs:
           cmake --build . --config Debug --target cPTATests -j 6 --
       - name: Run Tests
         working-directory: /home/runner/work/pyPTA/pyPTA/src/cpp/
-        run: |   
-          cd build/tests/ && ls
-          . build/tests/cPTATests
+        run: ./build/tests/cPTATests
