@@ -32,7 +32,9 @@ double maxvalue(double num1, double num2, double num3);
 
 void CheckValidPressure(double P);
 
-double CalculateMixturePenelouxVolumeTranslation(double vol, std::vector<double> molar_fractions, std::vector<Fluid> fluids);
-double CalculatePurePenelouxVolumeTranslation(double vol, Fluid fluid);
+double CalculateMixturePenelouxVolumeTranslation(double vol, double T, std::vector<double> molar_fractions, std::vector<Fluid> fluids);
+double CalculatePurePenelouxVolumeTranslation(double vol, double T, Fluid fluid);
+
+double GetTemperatureDependentVolumeShiftFactor(double T, Fluid fluid);
 
 #endif

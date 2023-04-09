@@ -52,6 +52,13 @@ std::function<mix_eos(std::vector<double>, double, double)> MixturePTA::get_equa
 			return srk().get_mixture_fluid_properties(composition, P, T, fluids);
 		};
 	}
+	else if (this->equation_of_state == "srk-peneloux")
+	{
+		return [=](std::vector<double> composition, double P, double T)
+		{
+			return srk_peneloux().get_mixture_fluid_properties(composition, P, T, fluids);
+		};
+	}
 	else
 	{
 		throw std::invalid_argument("Equation of State not found/defined.");
@@ -95,14 +102,14 @@ MixturePTA::GetAdsorptionPotentialInvoker(std::vector<std::vector<double>> poten
 	{
 		return [=](std::size_t i, double z, Fluid fluid)
 		{
-			return STEELE(z, potential_params[i][0], *fluid.LennardJonnesDiameter, this->adsorbent);
+			return STEELE(z, potential_params[i][0], fluid.LennardJonnesDiameter, this->adsorbent);
 		};
 	}
 	else if (this->potential == LEE_POTENTIAL)
 	{
 		return [=](std::size_t i, double z, Fluid fluid)
 		{
-			return LEE(z, potential_params[i][0], *fluid.LennardJonnesDiameter, this->adsorbent);
+			return LEE(z, potential_params[i][0], fluid.LennardJonnesDiameter, this->adsorbent);
 		};
 	}
 	else
@@ -143,7 +150,7 @@ MixturePTA::get_mixture_lj_loading(std::vector<double> bulk_composition, double 
 			throw std::invalid_argument("Missing the Lennard-Jonnes diameter for the fluid " + fluids[j].Name);
 		}
 
-		minimal_space = this->min_int * *fluids[j].LennardJonnesDiameter;
+		minimal_space = this->min_int * fluids[j].LennardJonnesDiameter;
 
 		z[j] = linespace(potential_parameters[j][1] / 2.0, minimal_space, this->num_of_layers);
 		deltas[j] = z[j][1] - z[j][0];

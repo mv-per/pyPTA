@@ -2,10 +2,12 @@
 #ifndef EOS_CPP
 #define EOS_CPP
 
+#include "./eos_helper.h"
 #include "./pr77.h"
 #include "./pr77_peneloux.h"
 #include "./srk.h"
-#include "./eos_helper.h"
+#include "./srk_peneloux.h"
+
 
 typedef std::function<mono_eos(double, double)> call_mono_eos;
 

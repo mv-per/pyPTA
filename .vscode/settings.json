@@ -1,5 +1,5 @@
 {
-    "cmake.cmakePath": "/home/mvper/miniconda3/envs/pyPTA/bin/cmake",
+    "cmake.cmakePath": "${userHome}/miniconda3/envs/pyPTA/bin/cmake",
     "files.associations": {
         "any": "cpp",
         "array": "cpp",

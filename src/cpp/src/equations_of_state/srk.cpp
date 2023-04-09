@@ -1,14 +1,13 @@
 
 
 #include "srk.h"
-/**
- * Original Peng-Robinson EOS
- *
- * Peng, D., & Robinson, D. B. (1977).
- * A rigorous method for predicting the critical properties of multicomponent systems from an equation of state.
- * AIChE Journal, 23(2), 137–144. doi:10.1002/aic.690230202
- *
- */
+
+srk::srk(){}
+
+srk::srk(double VolumeShiftFactor){
+    this->VolumeShiftFactor = VolumeShiftFactor;
+}
+
 
 /**
  * Get the Peng-Robinson critical parameters (a,b)
@@ -73,6 +72,10 @@ struct mono_eos srk::get_mono_fluid_properties(double P, double T, Fluid fluid)
 
     std::tie(a, b) = get_critical_properties(T, fluid.CriticalPressure, fluid.CriticalTemperature, fluid.AccentricFactor);
 
+    if (this->VolumeShiftFactor){
+        b = b-this->VolumeShiftFactor;
+    }
+
     double A = a * P / R / R / T / T;
     double B = b * P / R / T;
 
@@ -102,6 +105,11 @@ struct mono_eos srk::get_mono_fluid_properties(double P, double T, Fluid fluid)
     }
 
     double vol = Zvalue * R * T / P;
+
+    if (this->VolumeShiftFactor){
+        vol = vol-this->VolumeShiftFactor;
+    }
+
     double dens = 1.0 / vol;
 
     struct mono_eos results = {fug, dens, phi, Zvalue};

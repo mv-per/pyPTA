@@ -53,7 +53,8 @@ PYBIND11_MODULE(pyPTA, m)
         .def_readwrite("critical_temperature", &Fluid::CriticalTemperature)
         .def_readwrite("critical_compressibility", &Fluid::CriticalCompressibility)
         .def_readwrite("accentric_factor", &Fluid::AccentricFactor)
-        .def_readwrite("lennard_jonnes_diameter", &Fluid::LennardJonnesDiameter)
+        .def_readwrite("lennard_jonnes_diameter", *&Fluid::LennardJonnesDiameter)
+         .def_property_readonly("lennard_jonnes_diameter", [](Foo& self){ return self.LennardJonnesDiameter; })
         .def(py::init<>());
 
     py::class_<PurePTA>(m, "PurePTA")

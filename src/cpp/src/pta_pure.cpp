@@ -139,6 +139,13 @@ std::function<mono_eos(double, double)> PurePTA::GetEquationOfStateInvoker(Fluid
             return srk().get_mono_fluid_properties(P, T, fluid_);
         };
     }
+    else if (this->EquationOfState == "srk-peneloux")
+    {
+        return [=](double P, double T)
+        {
+            return srk_peneloux().get_mono_fluid_properties(P, T, fluid_);
+        };
+    }
     else
     {
         throw std::invalid_argument("Equation of State not found/defined.");
@@ -158,14 +165,14 @@ std::function<double(double)> PurePTA::GetAdsorptionPotentialInvoker(std::vector
     {
         return [=](double z)
         {
-            return STEELE(z, potential_params[0], *fluid.LennardJonnesDiameter, solid_properties);
+            return STEELE(z, potential_params[0], fluid.LennardJonnesDiameter, solid_properties);
         };
     }
     else if (this->Potential == LEE_POTENTIAL)
     {
         return [=](double z)
         {
-            return LEE(z, potential_params[0], *fluid.LennardJonnesDiameter, solid_properties);
+            return LEE(z, potential_params[0], fluid.LennardJonnesDiameter, solid_properties);
         };
     }
     else
@@ -222,7 +229,7 @@ double PurePTA::GetLJAdsorbedAmout(
     {
         throw std::invalid_argument("Missing the Lennard-Jonnes diameter for the fluid " + this->fluid.Name);
     }
-    double minimal_space = 0.7 * *this->fluid.LennardJonnesDiameter;
+    double minimal_space = 0.7 * this->fluid.LennardJonnesDiameter;
 
     std::vector<double>
         z = linespace(PotentialParameters[1] / 2.0, minimal_space, this->NumberOfLayers);

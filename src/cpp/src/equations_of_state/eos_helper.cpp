@@ -119,49 +119,88 @@ void CheckValidPressure(double P)
     // }
 }
 
+/**
+* @brief Calculates the temperature-dependent volume shift factor for a fluid.
+
+* This function calculates the volume shift factor for a fluid at a given temperature
+* using the Peng-Robinson equation of state. The volume shift factor is used to adjust
+* the ideal gas law to account for deviations from ideal behavior in real gases.
+*
+* Source: Ahlers, J., & Gmehling, J. (2001). 
+* Development of an universal group contribution equation of state.
+* Fluid Phase Equilibria, 191(1-2), 177–188. doi:10.1016/s0378-3812(01)00626-4 
+* 
+* @param T Temperature in Kelvin.
+* @param fluid Fluid object containing the critical properties of the fluid.
+* @return The temperature-dependent volume shift factor.
+*/
+double GetTemperatureDependentVolumeShiftFactor(double T, Fluid fluid){
+    double Tr = T/fluid.CriticalTemperature;
+    double CriticalCompressibility;
+
+    if (fluid.CriticalCompressibility)
+    {
+        CriticalCompressibility = fluid.CriticalCompressibility;
+    }
+    else
+    {
+        std::cout << "Critical compressibility not provided, Calculating from fluid's accentric factor" << std::endl;
+        CriticalCompressibility = 0.29506 - 0.08775* fluid.AccentricFactor;
+    }
+
+    double Cci = R*fluid.CriticalTemperature*(0.3074-CriticalCompressibility)/fluid.CriticalPressure; // [m3/mol]
+    double Ci = 0.252*R*fluid.CriticalTemperature*(-0.4024 + 1.5448*CriticalCompressibility) / fluid.CriticalPressure;  // [m3/mol]
+    double gamma = 12.67 - 107.21*CriticalCompressibility + 246.78*CriticalCompressibility*CriticalCompressibility; // [-]
+    double eta = 26.966-74.458*CriticalCompressibility; // [-]
+    double m = 0.37464+1.54226*fluid.AccentricFactor - 0.26992*fluid.AccentricFactor*fluid.AccentricFactor; // [-]
+    double alpha = std::pow(1 + m*(1-std::sqrt(Tr)),2); // [-]
+
+    return Ci - (0.35*Cci / (0.35 + std::pow(eta * std::fabs(alpha - Tr), gamma)));  // [m3/mol]
+}
+
+/** UNUSED
+ * @brief Calculates the volume shift factor for a fluid.
+ * 
+ * This function calculates the volume shift factor for a fluid using the Peng-Robinson equation of state.
+ * The volume shift factor is used to adjust the ideal gas law to account for deviations from ideal behavior
+ * in real gases.
+ * 
+ * @param fluid Fluid object containing the critical properties of the fluid.
+ * @return The fluid volume shift factor [m^3/mol].
+ */
 double GetFluidVolumeShiftFactor(Fluid fluid)
 {
     double CriticalCompressibility;
     if (fluid.CriticalCompressibility)
     {
-        CriticalCompressibility = *fluid.CriticalCompressibility;
+        CriticalCompressibility = fluid.CriticalCompressibility;
     }
     else
     {
         std::cout << "Critical compressibility not provided, calculating from critical properties" << std::endl;
-
-        // double CriticalVolume = R * fluid.CriticalTemperature / fluid.CriticalPressure;
-
-        // std::cout << CriticalVolume << std::endl;
-        // std::cout << fluid.CriticalPressure << std::endl;
-        // std::cout << fluid.Criti << std::endl;
-
-        // CriticalCompressibility = (fluid.CriticalPressure * CriticalVolume) / (R * fluid.CriticalTemperature);
-        CriticalCompressibility = pr77().get_mono_fluid_properties(fluid.CriticalPressure, fluid.CriticalTemperature, fluid).Z;
+        CriticalCompressibility = 0.29506 - 0.08775* fluid.AccentricFactor;
     }
 
-    std::cout << R << std::endl;
     std::cout << CriticalCompressibility << std::endl;
 
     return 0.40768 *
            R * fluid.CriticalTemperature * (0.29441 - CriticalCompressibility) / fluid.CriticalPressure;
+           // [m3 Pa / K / mol * K / Pa] == [m3/mol]
 }
 
-double CalculatePurePenelouxVolumeTranslation(double vol, Fluid fluid)
+double CalculatePurePenelouxVolumeTranslation(double vol, double T, Fluid fluid)
 {
-    return vol + GetFluidVolumeShiftFactor(fluid) / *fluid.MolecularWeight;
+    return vol - GetTemperatureDependentVolumeShiftFactor(T, fluid); // [m3/mol] - [m3/mol]
 }
 
-double CalculateMixturePenelouxVolumeTranslation(double vol, std::vector<double> molar_fractions, std::vector<Fluid> fluids)
+double CalculateMixturePenelouxVolumeTranslation(double vol, double T, std::vector<double> molar_fractions, std::vector<Fluid> fluids)
 {
 
-    double MixtureMolarWeight = 0;
     double MixtureVolumeShiftFactor = 0;
     for (std::size_t i = 0; i < molar_fractions.size(); i++)
     {
-        MixtureMolarWeight += *fluids[i].MolecularWeight * molar_fractions[i];
-        MixtureVolumeShiftFactor += GetFluidVolumeShiftFactor(fluids[i]) * molar_fractions[i];
+        MixtureVolumeShiftFactor += GetTemperatureDependentVolumeShiftFactor(T, fluids[i]) * molar_fractions[i];
     }
 
-    return vol + MixtureVolumeShiftFactor / MixtureMolarWeight;
+    return vol - MixtureVolumeShiftFactor;
 }

@@ -1,5 +1,5 @@
-#ifndef PR77_PENELOUX_H
-#define PR77_PENELOUX_H
+#ifndef SRK_PENELOUX_H
+#define SRK_PENELOUX_H
 
 #include <tuple>
 #include <cmath>
@@ -7,9 +7,9 @@
 #include "../data_classes.h"
 #include "../helpers.h"
 #include "eos_helper.h"
-#include "pr77.h"
+#include "srk.h"
 
-class pr77_peneloux
+class srk_peneloux
 {
 
 public:

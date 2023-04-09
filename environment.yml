@@ -4,6 +4,7 @@ channels:
 dependencies:
   - python=3.7
   - cmake
+  - ninja
   - pybind11
   - numpy
   - scipy
