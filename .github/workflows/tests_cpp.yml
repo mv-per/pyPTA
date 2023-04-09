@@ -19,4 +19,5 @@ jobs:
           cd /home/runner/work/pyPTA/pyPTA/src/cpp/build && make
       - name: Run Tests
         run: |   
-          ./home/runner/work/pyPTA/pyPTA/src/cpp/build/tests/cPTATests
+          ls /home/runner/work/pyPTA/pyPTA/src/cpp/build/tests/cPTATests
+          gcc /home/runner/work/pyPTA/pyPTA/src/cpp/build/tests/cPTATests
