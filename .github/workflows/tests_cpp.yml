@@ -14,5 +14,7 @@ jobs:
       - name: configure cPTA
         run: |
           mkdir /home/runner/work/pyPTA/pyPTA/src/cpp/build
+          cd /home/runner/work/pyPTA/pyPTA/src/cpp/build 
+          make .. 
           cmake --build /home/runner/work/pyPTA/pyPTA/src/cpp/build --config Release --target cPTATests -j 6 --
 
