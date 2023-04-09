@@ -16,4 +16,5 @@ jobs:
           mkdir /home/runner/work/pyPTA/pyPTA/src/cpp/build
           cd /home/runner/work/pyPTA/pyPTA/src/cpp/build && cmake ..
           cmake --build /home/runner/work/pyPTA/pyPTA/src/cpp/build --config Release --target cPTATests -j 6 --
+          cd /home/runner/work/pyPTA/pyPTA/src/cpp/build && make
 
