@@ -12,5 +12,7 @@ jobs:
         with:
             submodules: recursive
       - name: configure cPTA
-        run: cmake --build /home/runner/work/pyPTA/pyPTA/src/cpp/build --config Release --target cPTATests -j 6 --
+        run: |
+          mkdir /home/runner/work/pyPTA/pyPTA/src/cpp/build
+          cmake --build /home/runner/work/pyPTA/pyPTA/src/cpp/build --config Release --target cPTATests -j 6 --
 
