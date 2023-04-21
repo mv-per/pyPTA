@@ -6,6 +6,11 @@
 #include <cmath>
 #include <vector>
 #include <stdexcept>
+#include <iostream>
+#include <chrono>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
 #include <functional>
 #include "equations_of_state/eos.h"
 #include "optimization_algorithms/brent.h"
