@@ -105,34 +105,13 @@ double PurePTA::GetPressure(double n, double T, std::vector<double> potential_pa
     call_potential get_potential = GetAdsorptionPotentialInvoker(potential_params, fluid, this->adsorbent);
     call_mono_eos eos_caller = GetEquationOfStateInvoker(fluid);
 
-    auto fnn = [&](double P_estimate)
+    auto equilibrium = [&](double x)
     {
-        auto equilibrium = [&](double x)
-        {
-            double diff = (this->Loader(x, T, potential_params, eos_caller, get_potential) - n);
-            return diff * 1000;
-        };
-
-        return brent_zeroin(equilibrium, P_estimate, 1e-5);
+        double diff = (this->Loader(x, T, potential_params, eos_caller, get_potential) - n);
+        return diff * 1000;
     };
 
-    try
-    {
-        auto f1 = fn<double, double>(fnn);
-        return wrap_my_slow_function(f1, 1e6);
-
-        // Success, no timeout
-    }
-    catch (std::runtime_error &e)
-    {
-        //
-        // Do whatever you need here upon timeout failure
-        //
-        // throw
-        std::cout << "Timeout..." << std::endl;
-        return PurePTA::GetPressure(n, T, potential_params, fluid, P_estimate_ = P_estimate_ * 1.1);
-    }
-    // return 1000.;
+    return brent_zeroin(equilibrium, 1e6, 1e-5);
 }
 
 /**
