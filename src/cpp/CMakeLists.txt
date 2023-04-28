@@ -21,10 +21,12 @@ add_subdirectory(googletest)
 add_subdirectory(tests)
 
 file (GLOB Sources "src/*.cpp")
-file (GLOB OptimizationSources "src/optimization_algorithms/brent.cpp")
+file (GLOB OptimizationSources "src/optimization_algorithms/*.cpp")
+# file (GLOB OptimizationSources "src/optimization_algorithms/fmin.cpp")
 file (GLOB EoSSources "src/equations_of_state/*.cpp")
 
-file (GLOB OptimizationHeaders "src/optimization_algorithms/brent.h")
+file (GLOB OptimizationHeaders "src/optimization_algorithms/*.h")
+# file (GLOB OptimizationHeaders "src/optimization_algorithms/fmin.h")
 file (GLOB EoSHeaders "src/equations_of_state/*.h")
 file (GLOB Headers "src/*.h")
 

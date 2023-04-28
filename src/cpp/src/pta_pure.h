@@ -12,6 +12,9 @@
 #include "pta_solver.h"
 #include "equations_of_state/eos.h"
 #include "adsorption_potentials.h"
+#include "optimization_algorithms/bisection.h"
+#include "optimization_algorithms/brent.h"
+#include "optimization_algorithms/fmin.h"
 
 /**
  * Perform Pure PTA calculations
@@ -54,6 +57,16 @@ public:
 	 * @return Calculated adsorbed loading
 	 */
 	double GetLoading(double P, double T, std::vector<double> potential_params, Fluid fluid);
+	/**
+	 * Get the calculated pressure in a specific loading
+	 *
+	 * @param n loading of the fluid
+	 * @param T Temperature of the Fluid
+	 * @param potential_params Params of the Adsorption Potential for this fluid
+	 * @param fluid Fluid properties.
+	 * @return Calculated adsorbed loading
+	 */
+	double GetPressure(double n, double T, std::vector<double> potential_params, Fluid fluid, double P_estimate_);
 	/**
 	 * Get the calculated loading for different pressures
 	 *

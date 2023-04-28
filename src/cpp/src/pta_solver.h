@@ -14,6 +14,7 @@
 #include <functional>
 #include "equations_of_state/eos.h"
 #include "optimization_algorithms/brent.h"
+#include "optimization_algorithms/fmin.h"
 #include "data_classes.h"
 
 class PTASolver
@@ -25,7 +26,7 @@ private:
     double OptimizedPressure;
 
     /// Default tolerance
-    double DEFAULT_TOL = 1e-12;
+    double DEFAULT_TOL = 1e-4;
 
     double equilibrium(double p_,
                        double f_eps);

@@ -1,6 +1,68 @@
 #include "pta_pure.h"
 #include <iostream>
 
+//
+// Return a timestamp std::string to we can see how long things take
+//
+std::string timestamp(void)
+{
+    auto now = std::chrono::system_clock::now();
+    auto seconds = std::chrono::time_point_cast<std::chrono::seconds>(now);
+    auto mseconds = std::chrono::duration_cast<std::chrono::milliseconds>(now - seconds);
+    auto date = std::chrono::system_clock::to_time_t(now);
+
+    struct tm local_time;
+    localtime_r(&date, &local_time);
+
+    char buffer[128];
+    buffer[0] = '\0';
+    auto buffer_size = sizeof(buffer) - 1;
+    auto out = strftime(buffer, buffer_size, "%H:%M:%S", &local_time);
+    out += snprintf(buffer + out, buffer_size - out, ".%03d ", (int)mseconds.count());
+
+    return std::string(buffer);
+}
+
+template <typename ret, typename T, typename... Rest>
+using fn = std::function<ret(T, Rest...)>;
+
+template <typename ret, typename T, typename... Rest>
+ret wrap_my_slow_function(fn<ret, T, Rest...> f, T t, Rest... rest)
+{
+    std::mutex my_mutex;
+    std::condition_variable my_condition_var;
+    ret result = 0;
+
+    std::unique_lock<std::mutex> my_lock(my_mutex);
+
+    //
+    // Spawn a thread to call my_function_that_might_block().
+    // Pass in the condition variables and result by reference.
+    //
+    std::thread my_thread([&]()
+                          {
+    result = f(t, rest...);
+    // Unblocks one of the threads currently waiting for this condition.
+    my_condition_var.notify_one(); });
+
+    //
+    // Detaches the thread represented by the object from the calling
+    // thread, allowing them to execute independently from each other. B
+    //
+    my_thread.detach();
+
+    if (my_condition_var.wait_for(my_lock, std::chrono::milliseconds(1000)) == std::cv_status::timeout)
+    {
+        //
+        // Throw an exception so the caller knows we failed
+        //
+        // Timed out at       :
+        throw std::runtime_error("Timeout");
+    }
+
+    return result;
+}
+
 PurePTA::PurePTA(std::string potential, std::string equation_of_state, std::string isotherm_type, std::size_t num_of_layers)
 {
     this->Potential = potential;
@@ -26,6 +88,51 @@ double PurePTA::GetLoading(double P, double T, std::vector<double> potential_par
     call_mono_eos eos_caller = GetEquationOfStateInvoker(fluid);
     double Loading = this->Loader(P, T, potential_params, eos_caller, get_potential);
     return Loading;
+}
+
+/**
+ * Get the calculated loading in a specific pressure
+ *
+ * @param P Pressure of the fluid
+ * @param T Temperature of the Fluid
+ * @param potential_params Params of the Adsorption Potential for this fluid
+ * @param fluid Fluid properties.
+ * @return Calculated adsorbed loading
+ */
+double PurePTA::GetPressure(double n, double T, std::vector<double> potential_params, Fluid fluid, double P_estimate_ = 1e6)
+{
+    this->fluid = fluid;
+    call_potential get_potential = GetAdsorptionPotentialInvoker(potential_params, fluid, this->adsorbent);
+    call_mono_eos eos_caller = GetEquationOfStateInvoker(fluid);
+
+    auto fnn = [&](double P_estimate)
+    {
+        auto equilibrium = [&](double x)
+        {
+            double diff = (this->Loader(x, T, potential_params, eos_caller, get_potential) - n);
+            return diff * 1000;
+        };
+
+        return brent_zeroin(equilibrium, P_estimate, 1e-5);
+    };
+
+    try
+    {
+        auto f1 = fn<double, double>(fnn);
+        return wrap_my_slow_function(f1, 1e6);
+
+        // Success, no timeout
+    }
+    catch (std::runtime_error &e)
+    {
+        //
+        // Do whatever you need here upon timeout failure
+        //
+        // throw
+        std::cout << "Timeout..." << std::endl;
+        return PurePTA::GetPressure(n, T, potential_params, fluid, P_estimate_ = P_estimate_ * 1.1);
+    }
+    // return 1000.;
 }
 
 /**
@@ -70,19 +177,38 @@ double PurePTA::GetDeviationRange(std::string deviation_type,
 
     double difference = 0.;
 
-    std::vector<double> calc_loading = this->GetLoadings(P, T, potential_params, fluid);
-
-    for (std::size_t i = 0; i < P.size(); i++)
+    auto fnn = [&](deviation_caller _deviation)
     {
-        difference += deviation(loading_exp[i], calc_loading[i]);
-    }
+        std::vector<double> calc_loading = this->GetLoadings(P, T, potential_params, fluid);
+        for (std::size_t i = 0; i < P.size(); i++)
+        {
+            difference += _deviation(loading_exp[i], calc_loading[i]);
+        }
 
-    if (deviation_type.find("relative") != std::string::npos)
+        if (deviation_type.find("relative") != std::string::npos)
+        {
+            return 100. / loading_exp.size() * difference;
+        }
+
+        return difference;
+    };
+
+    try
     {
-        return 100. / loading_exp.size() * difference;
-    }
+        auto f1 = fn<double, deviation_caller>(fnn);
+        return wrap_my_slow_function(f1, deviation);
 
-    return difference;
+        // Success, no timeout
+    }
+    catch (std::runtime_error &e)
+    {
+        //
+        // Do whatever you need here upon timeout failure
+        //
+        // throw
+        std::cout << "Timeout..." << std::endl;
+    }
+    return 1000.;
 }
 
 void PurePTA::SetAdsorbent(Adsorbent adsorbent)
