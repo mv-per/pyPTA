@@ -2,17 +2,17 @@
 #include "brent.h"
 #include <iostream>
 
-MAX_ITER = 400
+double MAX_ITER = 400;
 
-    /**
-     * Returns the first value in the same unit as de second one
-     *
-     * @param value1 Value to change sign.
-     * @param value2 Value to find sign.
-     * @return value1 in the same unit as value2
-     */
-    double
-    sign(double value1, double value2)
+/**
+ * Returns the first value in the same unit as de second one
+ *
+ * @param value1 Value to change sign.
+ * @param value2 Value to find sign.
+ * @return value1 in the same unit as value2
+ */
+double
+sign(double value1, double value2)
 {
     if (value2 >= 0)
         return fabs(value1);
