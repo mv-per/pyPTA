@@ -2,14 +2,17 @@
 #include "brent.h"
 #include <iostream>
 
-/**
- * Returns the first value in the same unit as de second one
- *
- * @param value1 Value to change sign.
- * @param value2 Value to find sign.
- * @return value1 in the same unit as value2
- */
-double sign(double value1, double value2)
+MAX_ITER = 400
+
+    /**
+     * Returns the first value in the same unit as de second one
+     *
+     * @param value1 Value to change sign.
+     * @param value2 Value to find sign.
+     * @return value1 in the same unit as value2
+     */
+    double
+    sign(double value1, double value2)
 {
     if (value2 >= 0)
         return fabs(value1);
@@ -29,6 +32,7 @@ double brent_zeroin(std::function<double(double)> fun, double x, double tol)
 {
     double a, b, c, d, e, fa, fb, fc, tol1, xm, p, q, r, s, eps, fx, dx;
 
+    int iter = 0;
     eps = 1.1e-16;
 
     fx = fun(x);
@@ -82,9 +86,11 @@ begin_30:
 convergence_test:
     tol1 = 2.0 * eps * fabs(b) + 0.5 * tol;
     xm = 0.5 * (c - b);
-    if (fabs(xm) <= tol1 || fb == 0.0)
+
+    if (fabs(xm) <= tol1 || fb == 0.0 || iter >= MAX_ITER)
         goto done;
 
+    iter++;
     // Is bisection necessary
     if (fabs(e) < tol1)
         goto bisection;
